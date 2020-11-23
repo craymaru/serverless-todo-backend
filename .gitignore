@@ -6,3 +6,8 @@
 
 # Virtual Environment
 .venv/
+
+# chalice
+.chalice/deployments/
+.chalice/deployed/
+.chalice/venv/
