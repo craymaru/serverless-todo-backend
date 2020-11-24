@@ -3,6 +3,8 @@ from uuid import uuid4
 
 from boto3.dynamodb.conditions import Key, Attr
 
+from chalicelib import validates
+
 DEFAULT_USERNAME = 'default'
 
 
@@ -26,19 +28,32 @@ class DynamoDBTodo():
 
     def add_item(self, subject, description=None, metadata=None, username=DEFAULT_USERNAME):
         uid = str(uuid4())
+        subject = subject
+        description = description if description is not None else ""
+        state = 'unstarted'
+        metadata = metadata if metadata is not None else {}
+        username = username
+
+        validates.subject(subject)
+        validates.description(description)
+        validates.state(state)
+        validates.metadata(metadata)
+        validates.username(username)
+        
         self._table.put_item(
             Item={
                 'uid': uid,
                 'subject': subject,
-                'description': description if description is not None else "",
-                'state': 'unstarted',
-                'metadata': metadata if metadata is not None else {},
+                'description': description,
+                'state': state,
+                'metadata': metadata,
                 'username': username,
             }
         )
         return uid
 
     def get_item(self, uid, username=DEFAULT_USERNAME):
+        validates.username(username)
         response = self._table.get_item(
             Key={
                 'username': username,
@@ -48,6 +63,7 @@ class DynamoDBTodo():
         return response['Item']
 
     def delete_item(self, uid, username=DEFAULT_USERNAME):
+        validates.username(username)
         self._table.delete_item(
             Key={
                 'username': username,
@@ -57,13 +73,18 @@ class DynamoDBTodo():
 
     def update_item(self, uid, subject=None, description=None, state=None,
                     metadata=None, username=DEFAULT_USERNAME):
+        validates.username(username)
         item = self.get_item(uid, username)
         if subject is not None:
+            validates.subject(subject)
             item['subject'] = subject
         if description is not None:
+            validates.subject(description)
             item['description'] = description
         if state is not None:
+            validates.subject(state)
             item['state'] = state
         if metadata is not None:
+            validates.subject(metadata)
             item['metadata'] = metadata
         self._table.put_item(Item=item)

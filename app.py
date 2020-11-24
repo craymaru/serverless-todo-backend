@@ -3,8 +3,10 @@ from re import search
 
 import boto3
 from chalice import Chalice
+from chalice.app import BadRequestError
 
 from chalicelib import db
+from chalicelib import validates
 
 
 app = Chalice(app_name='serverless-todo-backend')
@@ -26,7 +28,7 @@ def get_app_db():
 
 @app.route('/todos', methods=['GET'])
 def get_todos():
-    query = ""
+    query = ''
     query_params = app.current_request.query_params
     if query_params is not None:
         q = query_params.get('q')
@@ -39,10 +41,22 @@ def get_todos():
 @app.route('/todos', methods=['POST'])
 def add_new_todo():
     body = app.current_request.json_body
+    if body is None:
+        raise BadRequestError('current_request.json_body is None.')
+
+    subject = body.get('subject')
+    description = body.get('description')
+    metadata = body.get('metadata')
+    
+    validates.subject(subject)
+    validates.description(description)
+    validates.metadata(metadata) if metadata is not None else None
+    # validates.username(username)
+
     return get_app_db().add_item(
-        subject=body['subject'],
-        description=body.get('description'),
-        metadata=body.get('metadata'),
+        subject=subject,
+        description=description,
+        metadata=metadata,
     )
 
 
@@ -59,10 +73,24 @@ def delete_todo(uid):
 @app.route('/todos/{uid}', methods=['PUT'])
 def update_todo(uid):
     body = app.current_request.json_body
+    if body is None:
+        BadRequestError("json_body is None.")
+
+    subject = body.get('subject')
+    description = body.get('description')
+    state = body.get('state')
+    metadata = body.get('metadata')
+
+    validates.subject(subject)
+    validates.description(description)
+    validates.state(state)
+    validates.metadata(metadata)
+    # validates.username(username)
+
     get_app_db().update_item(
         uid,
-        subject=body.get('subject'),
-        description=body.get('description'),
-        state=body.get('state'),
-        metadata=body.get('metadata')
+        subject=subject,
+        description=description,
+        state=state,
+        metadata=metadata
     )
