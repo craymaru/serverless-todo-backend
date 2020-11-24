@@ -1,4 +1,5 @@
 import os
+from re import search
 
 import boto3
 from chalice import Chalice
@@ -25,7 +26,14 @@ def get_app_db():
 
 @app.route('/todos', methods=['GET'])
 def get_todos():
-    return get_app_db().list_items()
+    query = ""
+    query_params = app.current_request.query_params
+    if query_params is not None:
+        q = query_params.get('q')
+        s = query_params.get('s')
+        search = query_params.get('search')
+        query = q if q else s if s else search if search else ""
+    return get_app_db().list_items(query=query)
 
 
 @app.route('/todos', methods=['POST'])

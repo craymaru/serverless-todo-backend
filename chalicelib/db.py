@@ -14,9 +14,13 @@ class DynamoDBTodo():
         response = self._table.scan()
         return response['Items']
 
-    def list_items(self, username=DEFAULT_USERNAME):
+    def list_items(self, query=None, username=DEFAULT_USERNAME):
         response = self._table.query(
-            KeyConditionExpression=Key('username').eq(username)
+            KeyConditionExpression=Key('username').eq(username),
+            FilterExpression=(
+                Attr('subject').contains(query) |
+                Attr('description').contains(query)
+            )
         )
         return response['Items']
 
