@@ -50,7 +50,6 @@ class DynamoDBTodo():
         return uid
 
     def get_item(self, uid, username=DEFAULT_USERNAME):
-        validates.username(username)
         response = self._table.get_item(
             Key={
                 'username': username,
