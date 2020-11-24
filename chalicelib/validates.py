@@ -78,15 +78,3 @@ def state(state):
         raise BadRequestError(
             "Bad state. "
             f"REQUIRED: strings of {', '.join(STATE_ENUM)} (You are: {state})")
-
-
-def metadata(metadata):
-    if metadata is None:
-        raise BadRequestError(
-            f"Metadata is None. (You are: {metadata})")
-
-    # metadata_type = type(metadata)
-    # if not isinstance(metadata, dict):
-    #     raise BadRequestError(
-    #         "Bad metadata type. "
-    #         f"REQUIRED: {dict} (You are: {metadata_type})")

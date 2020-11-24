@@ -46,17 +46,14 @@ def add_new_todo():
 
     subject = body.get('subject')
     description = body.get('description')
-    metadata = body.get('metadata')
     
     validates.subject(subject)
     validates.description(description)
-    validates.metadata(metadata) if metadata is not None else None
     # validates.username(username)
 
     return get_app_db().add_item(
         subject=subject,
         description=description,
-        metadata=metadata,
     )
 
 
@@ -79,18 +76,15 @@ def update_todo(uid):
     subject = body.get('subject')
     description = body.get('description')
     state = body.get('state')
-    metadata = body.get('metadata')
 
     validates.subject(subject)
     validates.description(description)
     validates.state(state)
-    validates.metadata(metadata)
     # validates.username(username)
 
     get_app_db().update_item(
         uid,
         subject=subject,
         description=description,
-        state=state,
-        metadata=metadata
+        state=state
     )
