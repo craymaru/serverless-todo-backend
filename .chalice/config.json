@@ -3,6 +3,7 @@
   "app_name": "serverless-todo-backend",
   "stages": {
     "dev": {
+      "autogen_policy": false,
       "api_gateway_stage": "api",
       "environment_variables": {
         "APP_TABLE_NAME": "serverless-todo-backend-f71fb8af-5dc0-4c8f-bdaf-e7e2d7124b7f"
