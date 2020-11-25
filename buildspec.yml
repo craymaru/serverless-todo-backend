@@ -1,4 +1,4 @@
-version: "0.1"
+version: 0.1
 artifacts:
   files:
     - transformed.yaml
@@ -11,5 +11,4 @@ phases:
       - pip install 'chalice>=1.21.0,<1.22.0'
       - pip install -r requirements.txt
       - chalice package /tmp/packaged
-      - aws cloudformation package --template-file /tmp/packaged/sam.json --s3-bucket
-        ${APP_S3_BUCKET} --output-template-file transformed.yaml
+      - aws cloudformation package --template-file /tmp/packaged/sam.json --s3-bucket ${APP_S3_BUCKET} --output-template-file transformed.yaml
