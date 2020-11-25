@@ -4,26 +4,21 @@ artifacts:
   files:
     - transformed.yaml
   type: zip
-env:
-  secrets-manager:
-    DOCKERHUB_USERNAME: arn:aws:secretsmanager:ap-northeast-1:142603634782:secret:DockerHubAccount:username
-    DOCKERHUB_PASSWORD: arn:aws:secretsmanager:ap-northeast-1:142603634782:secret:DockerHubAccount:password
+# env:
+#   secrets-manager:
+#     DOCKERHUB_USERNAME: arn:aws:secretsmanager:ap-northeast-1:142603634782:secret:DockerHubAccount:username
+#     DOCKERHUB_PASSWORD: arn:aws:secretsmanager:ap-northeast-1:142603634782:secret:DockerHubAccount:password
 phases:
-  install:
-    runtime-versions:
-      docker: 18
-    command:
-      - pip install --upgrade awscli
-      - aws --version
-  pre_build:
-    commands:
-      - echo Logging in to Docker Hub...
-      - echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdi
+  # pre_build:
+  #   commands:
+  #     - echo Logging in to Docker Hub...
+  #     - echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdi
   build:
     commands:
+      - pip install --upgrade awscli
+      - aws --version
       - pip install 'chalice>=1.21.0,<1.22.0'
       - pip install -r requirements.txt
       - chalice package /tmp/packaged
       - aws cloudformation package --template-file /tmp/packaged/sam.json --s3-bucket
         ${APP_S3_BUCKET}--output-template-file transformed.yaml
-
