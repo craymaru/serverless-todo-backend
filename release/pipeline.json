@@ -74,6 +74,13 @@
               ],
               "Resource": "arn:*:s3:::*",
               "Effect": "Allow"
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue"
+              ],
+              "Resource": "arn:aws:secretsmanager:*",
+              "Effect": "Allow"
             }
           ]
         },
@@ -112,8 +119,7 @@
           "Fn::GetAtt": "CodeBuildRole.Arn"
         },
         "Source": {
-          "Type": "CODEPIPELINE",
-          "BuildSpec": "artifacts:\n  files:\n  - transformed.yaml\n  type: zip\nphases:\n  install:\n    commands:\n    - pip install --upgrade awscli\n    - aws --version\n    - pip install 'chalice>=1.21.0,<1.22.0'\n    - pip install -r requirements.txt\n    - chalice package /tmp/packaged\n    - aws cloudformation package --template-file /tmp/packaged/sam.json --s3-bucket\n      ${APP_S3_BUCKET}--output-template-file transformed.yaml\nversion: '0.1'\n"
+          "Type": "CODEPIPELINE"
         }
       }
     },
