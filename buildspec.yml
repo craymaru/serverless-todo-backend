@@ -8,7 +8,13 @@ phases:
     commands:
       - pip install --upgrade awscli
       - aws --version
-      - pip install 'chalice>=1.21.0,<1.22.0'
+      - pip install virtualenv
+      - virtualenv /tmp/venv
+      - . /tmp/venv/bin/activate
       - pip install -r requirements.txt
+      - pip install -r requirements-test.txt
+      - pip install 'chalice>=1.21.0,<1.22.0'
+      - export PYTHONPATH=.
+      - pytest tests/ || exit 1
       - chalice package /tmp/packaged
       - aws cloudformation package --template-file /tmp/packaged/sam.json --s3-bucket ${APP_S3_BUCKET} --output-template-file transformed.yaml
