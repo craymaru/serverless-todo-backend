@@ -7,7 +7,11 @@ env:
     DOCKERHUB_USERNAME: arn:aws:secretsmanager:ap-northeast-1:142603634782:secret:DockerHubAccount:username
     DOCKERHUB_PASSWORD: arn:aws:secretsmanager:ap-northeast-1:142603634782:secret:DockerHubAccount:password
 phases:
-  install:
+  pre_build:
+    commands:
+      - echo Logging in to Docker Hub...
+      - echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdi
+  build:
     commands:
       - pip install --upgrade awscli
       - aws --version
@@ -16,8 +20,4 @@ phases:
       - chalice package /tmp/packaged
       - aws cloudformation package --template-file /tmp/packaged/sam.json --s3-bucket
         ${APP_S3_BUCKET}--output-template-file transformed.yaml
-  pre_build:
-    commands:
-      - echo Logging in to Docker Hub...
-      - echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
 version: "0.1"
