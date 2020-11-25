@@ -7,7 +7,7 @@
       "Description": "Enter the name of your application"
     },
     "CodeBuildImage": {
-      "Default": "python:3.8",
+      "Default": "aws/codebuild/amazonlinux2-x86_64-standard:3.0",
       "Type": "String",
       "Description": "Name of codebuild image to use."
     }
@@ -73,13 +73,6 @@
                 "s3:PutObject"
               ],
               "Resource": "arn:*:s3:::*",
-              "Effect": "Allow"
-            },
-            {
-              "Action": [
-                "secretsmanager:GetSecretValue"
-              ],
-              "Resource": "arn:aws:secretsmanager:*",
               "Effect": "Allow"
             }
           ]

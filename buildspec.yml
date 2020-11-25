@@ -1,18 +1,9 @@
 version: "0.1"
-
 artifacts:
   files:
     - transformed.yaml
   type: zip
-# env:
-#   secrets-manager:
-#     DOCKERHUB_USERNAME: arn:aws:secretsmanager:ap-northeast-1:142603634782:secret:DockerHubAccount:username
-#     DOCKERHUB_PASSWORD: arn:aws:secretsmanager:ap-northeast-1:142603634782:secret:DockerHubAccount:password
 phases:
-  # pre_build:
-  #   commands:
-  #     - echo Logging in to Docker Hub...
-  #     - echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdi
   build:
     commands:
       - pip install --upgrade awscli
