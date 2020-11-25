@@ -144,7 +144,7 @@
                   "Provider": "CodeCommit"
                 },
                 "Configuration": {
-                  "BranchName": "master",
+                  "BranchName": "main",
                   "RepositoryName": {
                     "Fn::GetAtt": "SourceRepository.Name"
                   }
