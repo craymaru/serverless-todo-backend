@@ -138,7 +138,7 @@ def delete_todo(uid):
         uid (str): 削除するTodoのuidを指定する
 
     Return:
-        -: -
+        uid: (str): 正常に削除されたTodoのuidを返す
 
     """
     return get_app_db().delete_item(uid)
@@ -157,22 +157,23 @@ def update_todo(uid):
         BadRequestError: 各種varidatesに失敗したケース
 
     Return:
-        -: -
+        uid: (str): 正常に更新されたTodoのuidを返す
+
     """
     body = app.current_request.json_body
     if body is None:
-        BadRequestError("json_body is None.")
+        raise BadRequestError("json_body is None.")
 
     subject = body.get('subject')
     description = body.get('description')
     state = body.get('state')
 
     validates.subject(subject) if subject is not None else None
-    validates.description(description) if subject is not None else None
-    validates.state(state) if subject is not None else None
+    validates.description(description) if description is not None else None
+    validates.state(state) if state is not None else None
     # validates.username(username)
 
-    get_app_db().update_item(
+    return get_app_db().update_item(
         uid,
         subject=subject,
         description=description,

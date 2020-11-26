@@ -2,8 +2,10 @@ from typing import DefaultDict
 from uuid import uuid4
 
 from boto3.dynamodb.conditions import Key, Attr
+from chalice import NotFoundError
 
 from chalicelib import validates
+
 
 DEFAULT_USERNAME = 'default'
 
@@ -45,7 +47,8 @@ class DynamoDBTodo():
                 'description': description,
                 'state': state,
                 'username': username,
-            }
+            },
+            ReturnValues='ALL_OLD'
         )
         return uid
 
@@ -54,18 +57,28 @@ class DynamoDBTodo():
             Key={
                 'username': username,
                 'uid': uid,
-            },
+            }
         )
-        return response['Item']
+        try:
+            res = response['Item']
+        except KeyError:
+            raise NotFoundError(f"Todo not found. (id: {uid}) ")
+        return res
 
     def delete_item(self, uid, username=DEFAULT_USERNAME):
         validates.username(username)
-        self._table.delete_item(
+        response = self._table.delete_item(
             Key={
                 'username': username,
                 'uid': uid,
-            }
+            },
+            ReturnValues='ALL_OLD'
         )
+        try:
+            res = response['Attributes']['uid']
+        except KeyError:
+            raise NotFoundError(f"Todo not found. (id: {uid}) ")
+        return res['Attributes']['uid']
 
     def update_item(self, uid, subject=None, description=None,
                     state=None, username=DEFAULT_USERNAME):
@@ -80,4 +93,9 @@ class DynamoDBTodo():
         if state is not None:
             validates.subject(state)
             item['state'] = state
-        self._table.put_item(Item=item)
+        response = self._table.put_item(Item=item, ReturnValues='ALL_OLD')
+        try:
+            res = response['Attributes']['uid']
+        except KeyError:
+            raise NotFoundError(f"Todo not found. (id: {uid}) ")
+        return res
