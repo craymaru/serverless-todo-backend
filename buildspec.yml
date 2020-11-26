@@ -5,6 +5,8 @@ artifacts:
   type: zip
 phases:
   install:
+    runtime-versions:
+      python: 3.8
     commands:
       - pip install --upgrade awscli
       - aws --version
@@ -18,8 +20,8 @@ phases:
       # - pip install 'chalice>=1.21.0,<1.22.0'
       - pip install pipenv
       - pipenv install
-      - pipenv shell
-      - python --version
+      - export VENV_HOME_DIR=$(pipenv --venv)
+      - . $VENV_HOME_DIR/bin/activate
       # - export PYTHONPATH=.
   build:
     commands:
