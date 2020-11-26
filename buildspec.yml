@@ -25,7 +25,7 @@ phases:
       # - export PYTHONPATH=.
   build:
     commands:
-      - pytest tests/ -v
+      - pytest tests/ || exit 1
   post_build:
     commands:
       - chalice package /tmp/packaged
