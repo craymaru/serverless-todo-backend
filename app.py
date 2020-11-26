@@ -25,9 +25,10 @@ def get_app_db():
 
     envs:
         APP_TABLE_NAME: 接続するDynamoDB上のテーブル名
-        DYNAMO_DB_ENDPOINT: 接続するDynamoDBのURL
-        この環境変数が空の場合、呼び出し元のクレデンシャルと同一の、
-        AWS アカウント/リージョンが保有している DynamoDB にアクセスします
+        DYNAMO_DB_ENDPOINT:
+            接続するDynamoDBのエンドポイント
+            この環境変数が存在しない場合は、「呼び出し環境のcredentialsと同一の
+            AWSアカウント/リージョンに属するDynamoDB」にアクセスします
 
     Return:
         DynamoDBTodo(class): DynamoDBの接続を内包したDynamoDBTodoインスタンスを返します
@@ -89,8 +90,9 @@ def add_new_todo():
     DynamoDB にレコードを新規追加します
 
     Raises:
-        BadRequestError: json_bodyが存在しないケース
-        BadRequestError: 各種varidatesに失敗したケース
+        BadRequestError:
+            json_bodyが存在しないケース
+            各種varidatesに失敗したケース
 
     Return:
         str: 登録に成功したuidを返す
@@ -153,8 +155,9 @@ def update_todo(uid):
     DynamoDB のレコードを更新します
 
     Raises:
-        BadRequestError: json_bodyが存在しないケース
-        BadRequestError: 各種varidatesに失敗したケース
+        BadRequestError:
+            json_bodyが存在しないケース
+            各種varidatesに失敗したケース
 
     Return:
         uid: (str): 正常に更新されたTodoのuidを返す
