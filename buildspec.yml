@@ -1,20 +1,30 @@
-version: 0.1
+version: 0.2
 artifacts:
   files:
     - transformed.yaml
   type: zip
 phases:
-  build:
+  install:
     commands:
       - pip install --upgrade awscli
       - aws --version
-      - pip install virtualenv
-      - virtualenv /tmp/venv
-      - . /tmp/venv/bin/activate
-      - pip install -r requirements.txt
-      - pip install -r requirements-test.txt
-      - pip install 'chalice>=1.21.0,<1.22.0'
-      - export PYTHONPATH=.
-      - pytest tests/ -v || exit 1
+  pre_build:
+    commands:
+      # - pip install virtualenv
+      # - virtualenv /tmp/venv
+      # - . /tmp/venv/bin/activate
+      # - pip install -r requirements.txt
+      # - pip install -r requirements-test.txt
+      # - pip install 'chalice>=1.21.0,<1.22.0'
+      - pip install pipenv
+      - pipenv install
+      - pipenv shell
+      - python --version
+      # - export PYTHONPATH=.
+  build:
+    commands:
+      - pytest tests/ -v
+  post_build:
+    commands:
       - chalice package /tmp/packaged
       - aws cloudformation package --template-file /tmp/packaged/sam.json --s3-bucket ${APP_S3_BUCKET} --output-template-file transformed.yaml
