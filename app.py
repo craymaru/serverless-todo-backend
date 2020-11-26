@@ -8,7 +8,6 @@ from chalice.app import BadRequestError
 from chalicelib import db
 from chalicelib import validates
 
-
 app = Chalice(app_name='serverless-todo-backend')
 app.debug = True
 
@@ -31,7 +30,8 @@ def get_app_db():
             AWSアカウント/リージョンに属するDynamoDB」にアクセスします
 
     Return:
-        DynamoDBTodo(class): DynamoDBの接続を内包したDynamoDBTodoインスタンスを返します
+        DynamoDBTodo(class):
+            DynamoDBへのアクセス情報を内包したDynamoDBTodoインスタンスを返します
 
     Examples:
         get_app_db().list_items()
@@ -73,12 +73,12 @@ def get_todos():
 
     """
     query = ''
-    query_params = app.current_request.query_params
-    if query_params is not None:
-        q = query_params.get('q')
-        s = query_params.get('s')
-        search = query_params.get('search')
-        query = q if q else s if s else search if search else ""
+    params = app.current_request.query_params
+    if params is not None:
+        for key in 'q', 's', 'search':
+            if key in params :
+                query = params[key] 
+                break
     return get_app_db().list_items(query=query)
 
 
