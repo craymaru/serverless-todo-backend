@@ -29,36 +29,27 @@ class DynamoDBTodo():
         return response['Items']
 
     def add_item(self, subject, description=None, username=DEFAULT_USERNAME):
-        uid = str(uuid4())
-        subject = subject
-        description = description if description is not None else ""
-        state = 'unstarted'
-        username = username
+        item = {
+            'uid': str(uuid4()),
+            'subject': subject,
+            'description': description if description is not None else "",
+            'state': 'unstarted',
+            'username': username
+        }
+        validates.subject(item['subject'])
+        validates.description(item['description'])
+        validates.state(item['state'])
+        validates.username(item['username'])
 
-        validates.subject(subject)
-        validates.description(description)
-        validates.state(state)
-        validates.username(username)
-
-        self._table.put_item(
-            Item={
-                'uid': uid,
-                'subject': subject,
-                'description': description,
-                'state': state,
-                'username': username,
-            },
-            ReturnValues='ALL_OLD'
-        )
-        return uid
+        self._table.put_item(Item=item, ReturnValues='ALL_OLD')
+        return item['uid']
 
     def get_item(self, uid, username=DEFAULT_USERNAME):
         response = self._table.get_item(
             Key={
                 'username': username,
-                'uid': uid,
-            }
-        )
+                'uid': uid
+            })
         try:
             res = response['Item']
         except KeyError:
@@ -72,13 +63,12 @@ class DynamoDBTodo():
                 'username': username,
                 'uid': uid,
             },
-            ReturnValues='ALL_OLD'
-        )
+            ReturnValues='ALL_OLD')
         try:
             res = response['Attributes']['uid']
         except KeyError:
             raise NotFoundError(f"Todo not found. (id: {uid}) ")
-        return res['Attributes']['uid']
+        return res
 
     def update_item(self, uid, subject=None, description=None,
                     state=None, username=DEFAULT_USERNAME):
