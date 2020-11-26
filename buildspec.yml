@@ -5,8 +5,8 @@ artifacts:
   type: zip
 phases:
   install:
-    # runtime-versions:
-    #   python: 3.8
+    runtime-versions:
+      python: 3.8
     commands:
       - pip install --upgrade awscli
       - aws --version
@@ -16,13 +16,10 @@ phases:
       - pipenv install
       - export VENV_HOME_DIR=$(pipenv --venv)
       - . $VENV_HOME_DIR/bin/activate
+      - pytest tests/ || exit 1
   build:
     commands:
-      - |
-        set -e
-        pytest tests/
-        echo $?
+      - chalice package /tmp/packaged
   post_build:
     commands:
-      - chalice package /tmp/packaged
       - aws cloudformation package --template-file /tmp/packaged/sam.json --s3-bucket ${APP_S3_BUCKET} --output-template-file transformed.yaml
