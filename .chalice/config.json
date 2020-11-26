@@ -2,6 +2,12 @@
   "version": "2.0",
   "app_name": "serverless-todo-backend",
   "stages": {
+    "local": {
+      "environment_variables": {
+        "DYNAMO_DB_ENDPOINT": "http://127.0.0.1:8005",
+        "APP_TABLE_NAME": "serverless-todo"
+      }
+    },
     "dev": {
       "autogen_policy": false,
       "api_gateway_stage": "api",

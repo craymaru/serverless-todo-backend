@@ -23,6 +23,12 @@ def get_app_db():
     デプロイのステージごとに DynamoDB テーブルを変更することができます
     環境変数の定義は .chalice/config.json を参照してください
 
+    envs:
+        APP_TABLE_NAME: 接続するDynamoDB上のテーブル名
+        DYNAMO_DB_ENDPOINT: 接続するDynamoDBのURL
+        この環境変数が空の場合、呼び出し元のクレデンシャルと同一の、
+        AWS アカウント/リージョンが保有している DynamoDB にアクセスします
+
     Return:
         DynamoDBTodo(class): DynamoDBの接続を内包したDynamoDBTodoインスタンスを返します
 
@@ -35,10 +41,10 @@ def get_app_db():
     """
     global _DB
     if _DB is None:
+        endpoint = os.environ.get('DYNAMO_DB_ENDPOINT')
+        tablename = os.environ['APP_TABLE_NAME']
         _DB = db.DynamoDBTodo(
-            boto3.resource('dynamodb').Table(
-                os.environ['APP_TABLE_NAME']
-            )
+            boto3.resource('dynamodb', endpoint_url=endpoint).Table(tablename)
         )
     return _DB
 
