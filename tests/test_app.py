@@ -63,9 +63,15 @@ ddb_response_items = [
 
 not_str_testcases = [True, False, -1, 0, 1, {'0'}, {'k': 'v'}, [0]]
 
+class TestGetIndex:
+    def test_Return_status_code_200_and_specific_json(self, client):
+        response = client.get('/')
+        assert response.status_code == HTTPStatus.OK
+        assert response.json == {'message': 'serverless todo api'}
+
 
 class TestGetAppDB:
-    def test_Get_return_app_db_class(self, monkeypatch):
+    def test_Return_DynamoDBTodo_class(self, monkeypatch):
         monkeypatch.setenv('APP_TABLE_NAME', 'serverless-todos')
         expected = DynamoDBTodo("").__class__
         actual = app.get_app_db().__class__
@@ -75,7 +81,7 @@ class TestGetAppDB:
 class TestGetTodos:
     expected_list = ddb_response_items
 
-    def test_Get_return_todos_list(self, monkeypatch):
+    def test_Return_todos_list(self, monkeypatch):
         monkeypatch.setenv('APP_TABLE_NAME', 'serverless-todos')
         monkeypatch.setattr(DynamoDBTodo, 'list_items',
                             lambda *args, **kwargs: self.expected_list)

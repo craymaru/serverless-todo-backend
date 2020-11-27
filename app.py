@@ -182,3 +182,7 @@ def update_todo(uid):
         description=description,
         state=state
     )
+
+@app.route('/')
+def get_index():
+    return {'message': 'serverless todo api'}
