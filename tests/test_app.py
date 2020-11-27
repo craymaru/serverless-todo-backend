@@ -64,12 +64,6 @@ ddb_response_items = [
 not_str_testcases = [True, False, -1, 0, 1, {'0'}, {'k': 'v'}, [0]]
 
 
-def test_test_pipeline(client):
-    response = client.get('/test-pipeline')
-    assert response.status_code == HTTPStatus.OK
-    assert response.json == {'pipeline': 'route'}
-
-
 class TestGetAppDB:
     def test_Get_return_app_db_class(self, monkeypatch):
         monkeypatch.setenv('APP_TABLE_NAME', 'serverless-todos')
@@ -185,6 +179,7 @@ class TestUpdateTodo:
         json_body = {'state': 'completed'}
         monkeypatch.setattr(Request, 'json_body', json_body)
         assert app.update_todo("_uid") == self.expected_str
+
 
 class TestSharedRaises:
     expected_str = ddb_response_items[0]['uid']

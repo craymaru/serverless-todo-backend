@@ -182,8 +182,3 @@ def update_todo(uid):
         description=description,
         state=state
     )
-
-
-@app.route('/test-pipeline')
-def test_pipeline():
-    return {'pipeline': 'route'}
