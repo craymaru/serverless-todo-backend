@@ -16,7 +16,7 @@ phases:
       - pipenv install
       - export VENV_HOME_DIR=$(pipenv --venv)
       - . $VENV_HOME_DIR/bin/activate
-      - pytest tests/ || exit 1
+      - pytest tests/ pytest -vs --durations=10 || exit 1
   build:
     commands:
       - chalice package /tmp/packaged
