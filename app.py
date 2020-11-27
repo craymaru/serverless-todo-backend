@@ -76,8 +76,8 @@ def get_todos():
     params = app.current_request.query_params
     if params is not None:
         for key in 'q', 's', 'search':
-            if key in params :
-                query = params[key] 
+            if key in params:
+                query = params[key]
                 break
     return get_app_db().list_items(query=query)
 
@@ -105,7 +105,7 @@ def add_new_todo():
     description = body.get('description')
 
     validates.subject(subject)
-    validates.description(description)
+    validates.description(description) if description is not None else None
     # validates.username(username)
 
     return get_app_db().add_item(
