@@ -3,16 +3,13 @@ from uuid import uuid4
 
 from botocore.exceptions import EndpointConnectionError
 from boto3.dynamodb.conditions import Key, Attr
-from chalice import NotFoundError, ChaliceViewError
+from chalice import NotFoundError
 
 from chalicelib import validates
+from chalicelib.exceptions import DatabaseConnectionError
 
 
 DEFAULT_USERNAME = 'default'
-
-
-class DatabaseConnectionError(ChaliceViewError):
-    STATUS_CODE = 501
 
 
 def except_endpoint_connection_error(func):

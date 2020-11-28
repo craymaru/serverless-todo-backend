@@ -10,6 +10,7 @@ boto3 = "*"
 [dev-packages]
 pytest = "*"
 pytest-chalice = "*"
+moto = "*"
 
 [requires]
 python_version = "3.8"
