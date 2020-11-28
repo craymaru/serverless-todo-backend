@@ -9,7 +9,7 @@ from chalicelib import validates
 import app
 
 
-ddb_response_items = [
+DDB_RESPONSE_ITEMS = [
     {
         "description": "nyao",
         "state": "unstarted",
@@ -61,7 +61,15 @@ ddb_response_items = [
     }
 ]
 
-not_str_testcases = [True, False, -1, 0, 1, {'0'}, {'k': 'v'}, [0]]
+NOT_STR_TESTCASES = [True, False, -1, 0, 1, {'0'}, {'k': 'v'}, [0]]
+
+
+class APPTest:
+
+    @staticmethod
+    def monkeys(monkeypatch):
+        monkeypatch.setenv('APP_TABLE_NAME', 'serverless-todos')
+
 
 class TestGetIndex:
     def test_Return_status_code_200_and_specific_json(self, client):
@@ -70,29 +78,34 @@ class TestGetIndex:
         assert response.json == {'message': 'serverless todo api'}
 
 
-class TestGetAppDB:
+class TestGetAppDB(APPTest):
+
+    def monkeys(self, monkeypatch):
+        super().monkeys(monkeypatch)
+
     def test_Return_DynamoDBTodo_class(self, monkeypatch):
-        monkeypatch.setenv('APP_TABLE_NAME', 'serverless-todos')
-        expected = DynamoDBTodo("").__class__
-        actual = app.get_app_db().__class__
-        assert actual == expected
+        self.monkeys(monkeypatch)
+        assert app.get_app_db().__class__ == DynamoDBTodo("").__class__
 
 
-class TestGetTodos:
-    expected_list = ddb_response_items
+class TestGetTodos(APPTest):
+    expected_list = DDB_RESPONSE_ITEMS
+
+    def monkeys(self, monkeypatch):
+        super().monkeys(monkeypatch)
 
     def test_Return_todos_list(self, monkeypatch):
-        monkeypatch.setenv('APP_TABLE_NAME', 'serverless-todos')
+        self.monkeys(monkeypatch)
         monkeypatch.setattr(DynamoDBTodo, 'list_items',
                             lambda *args, **kwargs: self.expected_list)
         assert app.get_todos() == self.expected_list
 
 
-class TestAddNewTodo:
-    expected_str = ddb_response_items[0]['uid']
+class TestAddNewTodo(APPTest):
+    expected_str = DDB_RESPONSE_ITEMS[0]['uid']
 
     def monkeys(self, monkeypatch):
-        monkeypatch.setenv('APP_TABLE_NAME', 'serverless-todos')
+        super().monkeys(monkeypatch)
         monkeypatch.setattr(DynamoDBTodo, 'add_item',
                             lambda *args, **kwargs: self.expected_str)
 
@@ -123,11 +136,11 @@ class TestAddNewTodo:
             app.add_new_todo() == self.expected_str
 
 
-class TestGetTodo:
-    expected_dict = ddb_response_items[0]
+class TestGetTodo(APPTest):
+    expected_dict = DDB_RESPONSE_ITEMS[0]
 
     def monkeys(self, monkeypatch):
-        monkeypatch.setenv('APP_TABLE_NAME', 'serverless-todos')
+        super().monkeys(monkeypatch)
         monkeypatch.setattr(DynamoDBTodo, 'get_item',
                             lambda *_: self.expected_dict)
 
@@ -138,23 +151,26 @@ class TestGetTodo:
         assert actual == self.expected_dict
 
 
-class TestDeleteTodo:
-    expected_str = ddb_response_items[0]['uid']
+class TestDeleteTodo(APPTest):
+    expected_str = DDB_RESPONSE_ITEMS[0]['uid']
 
-    def test_Return_uid(self, monkeypatch):
-        monkeypatch.setenv('APP_TABLE_NAME', 'serverless-todos')
+    def monkeys(self, monkeypatch):
+        super().monkeys(monkeypatch)
         monkeypatch.setattr(DynamoDBTodo, 'delete_item',
                             lambda *_: self.expected_str)
+
+    def test_Return_uid(self, monkeypatch):
+        self.monkeys(monkeypatch)
         uid = self.expected_str
         actual = app.delete_todo({uid})
         assert actual == self.expected_str
 
 
-class TestUpdateTodo:
-    expected_str = ddb_response_items[0]['uid']
+class TestUpdateTodo(APPTest):
+    expected_str = DDB_RESPONSE_ITEMS[0]['uid']
 
     def monkeys(self, monkeypatch):
-        monkeypatch.setenv('APP_TABLE_NAME', 'serverless-todos')
+        super().monkeys(monkeypatch)
         monkeypatch.setattr(DynamoDBTodo, 'update_item',
                             lambda *args, **kwargs: self.expected_str)
 
@@ -188,7 +204,7 @@ class TestUpdateTodo:
 
 
 class TestSharedRaises:
-    expected_str = ddb_response_items[0]['uid']
+    expected_str = DDB_RESPONSE_ITEMS[0]['uid']
 
     def monkeys(self, monkeypatch):
         monkeypatch.setenv('APP_TABLE_NAME', 'serverless-todos')
@@ -221,7 +237,7 @@ class TestSharedRaises:
 
     def test_Raise_BadRequestError_when_Bad_subject_type(self, monkeypatch):
         self.monkeys(monkeypatch)
-        for testcase in not_str_testcases:
+        for testcase in NOT_STR_TESTCASES:
             json_body = {'subject': testcase}
             monkeypatch.setattr(Request, 'json_body', json_body)
             with pytest.raises(BadRequestError):
@@ -245,7 +261,7 @@ class TestSharedRaises:
 
     def test_Raise_BadRequestError_when_Bad_description_type(self, monkeypatch):
         self.monkeys(monkeypatch)
-        for testcase in not_str_testcases:
+        for testcase in NOT_STR_TESTCASES:
             json_body = {'description': testcase}
             monkeypatch.setattr(Request, 'json_body', json_body)
             with pytest.raises(BadRequestError):
@@ -268,7 +284,7 @@ class TestSharedRaises:
 
     def test_Raise_BadRequestError_when_Bad_state_type(self, monkeypatch):
         self.monkeys(monkeypatch)
-        for testcase in not_str_testcases:
+        for testcase in NOT_STR_TESTCASES:
             json_body = {'state': testcase}
             monkeypatch.setattr(Request, 'json_body', json_body)
             with pytest.raises(BadRequestError):
