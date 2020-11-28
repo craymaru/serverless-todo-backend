@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 chalice = "*"
 boto3 = "*"
+pytest = "*"
+pytest-chalice = "*"
+moto = "*"
 
 [dev-packages]
 pytest = "*"
