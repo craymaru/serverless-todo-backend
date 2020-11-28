@@ -42,7 +42,7 @@ class TestGetTodos(APPTest):
 
     def monkeys(self, client, monkeypatch):
         super().monkeys(monkeypatch)
-        client.get('/todos')
+        client.get('/')
         monkeypatch.setattr(DynamoDBTodo, 'list_items',
                             lambda *args, **kwargs: self.expected_list)
 
@@ -56,7 +56,7 @@ class TestAddNewTodo(APPTest):
 
     def monkeys(self, client, monkeypatch):
         super().monkeys(monkeypatch)
-        client.get('/todos')
+        client.get('/')
         monkeypatch.setattr(DynamoDBTodo, 'add_item',
                             lambda *args, **kwargs: self.expected_str)
 
@@ -122,7 +122,7 @@ class TestUpdateTodo(APPTest):
 
     def monkeys(self, client, monkeypatch):
         super().monkeys(monkeypatch)
-        client.get('/todos')
+        client.get('/')
         monkeypatch.setattr(DynamoDBTodo, 'update_item',
                             lambda *args, **kwargs: self.expected_str)
 
@@ -160,7 +160,7 @@ class TestSharedRaises(APPTest):
 
     def monkeys(self, client, monkeypatch):
         super().monkeys(monkeypatch)
-        client.get('/todos')
+        client.get('/')
         monkeypatch.setattr(DynamoDBTodo, 'add_item',
                             lambda *args, **kwargs: self.expected_str)
         monkeypatch.setattr(DynamoDBTodo, 'update_item',
