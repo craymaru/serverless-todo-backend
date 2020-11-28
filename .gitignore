@@ -12,3 +12,6 @@
 .chalice/deployed/
 .chalice/venv/
 packaged/
+
+# pytest
+__pycache__/
