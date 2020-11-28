@@ -8,67 +8,16 @@ import app
 from chalicelib import validates
 from chalicelib.db import DynamoDBTodo
 
-
-DDB_RESPONSE_ITEMS = [
-    {
-        "description": "nyao",
-        "state": "unstarted",
-        "subject": "meow",
-        "uid": "37dc42c4-a2df-4606-8b3c-eb6332ef9699",
-        "username": "default"
-    },
-    {
-        "description": "nyao",
-        "state": "copleted",
-        "subject": "meow",
-        "uid": "49849666-b06a-479e-8d7d-bf96d9b3e7f8",
-        "username": "default"
-    },
-    {
-        "description": "nyao",
-        "state": "completed",
-        "subject": "meow",
-        "uid": "a0baeb00-33f0-4c35-8ac3-6f9333a1de13",
-        "username": "default"
-    },
-    {
-        "description": "nyao",
-        "state": "unstarted",
-        "subject": "meow",
-        "uid": "a8debdcd-afbb-4935-94f2-a541cf9c670a",
-        "username": "default"
-    },
-    {
-        "description": "nyao",
-        "state": "unstarted",
-        "subject": "meow",
-        "uid": "b863c9c7-a61b-487e-9bdb-310cf8aa92cf",
-        "username": "default"
-    },
-    {
-        "description": "nyao",
-        "state": "unstarted",
-        "subject": "meow",
-        "uid": "b8c2a8c9-eed9-41b8-8f99-32e7661e6693",
-        "username": "default"
-    },
-    {
-        "description": "nyao",
-        "state": "unstarted",
-        "subject": "meow",
-        "uid": "eca373d1-81b4-48e8-abb2-27f82599c1c7",
-        "username": "default"
-    }
-]
-
-NOT_STR_TESTCASES = [True, False, -1, 0, 1, {'0'}, {'k': 'v'}, [0]]
+from tests.conftest import APP_TABLE_NAME
+from tests.testcases.ddb_response_items import TESTCASE_DDB_RESPONSE_ITEMS
+from tests.testcases.non_str_types import TESTCASE_NON_STR_TYPES
 
 
 class APPTest:
 
     @staticmethod
     def monkeys(monkeypatch):
-        monkeypatch.setenv('APP_TABLE_NAME', 'serverless-todos')
+        monkeypatch.setenv('APP_TABLE_NAME', APP_TABLE_NAME)
 
 
 class TestGetIndex:
@@ -89,7 +38,7 @@ class TestGetAppDB(APPTest):
 
 
 class TestGetTodos(APPTest):
-    expected_list = DDB_RESPONSE_ITEMS
+    expected_list = TESTCASE_DDB_RESPONSE_ITEMS
 
     def monkeys(self, client, monkeypatch):
         super().monkeys(monkeypatch)
@@ -103,7 +52,7 @@ class TestGetTodos(APPTest):
 
 
 class TestAddNewTodo(APPTest):
-    expected_str = DDB_RESPONSE_ITEMS[0]['uid']
+    expected_str = TESTCASE_DDB_RESPONSE_ITEMS[0]['uid']
 
     def monkeys(self, client, monkeypatch):
         super().monkeys(monkeypatch)
@@ -139,7 +88,7 @@ class TestAddNewTodo(APPTest):
 
 
 class TestGetTodo(APPTest):
-    expected_dict = DDB_RESPONSE_ITEMS[0]
+    expected_dict = TESTCASE_DDB_RESPONSE_ITEMS[0]
 
     def monkeys(self, monkeypatch):
         super().monkeys(monkeypatch)
@@ -154,7 +103,7 @@ class TestGetTodo(APPTest):
 
 
 class TestDeleteTodo(APPTest):
-    expected_str = DDB_RESPONSE_ITEMS[0]['uid']
+    expected_str = TESTCASE_DDB_RESPONSE_ITEMS[0]['uid']
 
     def monkeys(self, monkeypatch):
         super().monkeys(monkeypatch)
@@ -169,7 +118,7 @@ class TestDeleteTodo(APPTest):
 
 
 class TestUpdateTodo(APPTest):
-    expected_str = DDB_RESPONSE_ITEMS[0]['uid']
+    expected_str = TESTCASE_DDB_RESPONSE_ITEMS[0]['uid']
 
     def monkeys(self, client, monkeypatch):
         super().monkeys(monkeypatch)
@@ -207,7 +156,7 @@ class TestUpdateTodo(APPTest):
 
 
 class TestSharedRaises(APPTest):
-    expected_str = DDB_RESPONSE_ITEMS[0]['uid']
+    expected_str = TESTCASE_DDB_RESPONSE_ITEMS[0]['uid']
 
     def monkeys(self, client, monkeypatch):
         super().monkeys(monkeypatch)
@@ -241,7 +190,7 @@ class TestSharedRaises(APPTest):
 
     def test_Raise_BadRequestError_when_Bad_subject_type(self, client, monkeypatch):
         self.monkeys(client, monkeypatch)
-        for testcase in NOT_STR_TESTCASES:
+        for testcase in TESTCASE_NON_STR_TYPES:
             json_body = {'subject': testcase}
             monkeypatch.setattr(Request, 'json_body', json_body)
             with pytest.raises(BadRequestError):
@@ -265,7 +214,7 @@ class TestSharedRaises(APPTest):
 
     def test_Raise_BadRequestError_when_Bad_description_type(self, client, monkeypatch):
         self.monkeys(client, monkeypatch)
-        for testcase in NOT_STR_TESTCASES:
+        for testcase in TESTCASE_NON_STR_TYPES:
             json_body = {'description': testcase}
             monkeypatch.setattr(Request, 'json_body', json_body)
             with pytest.raises(BadRequestError):
@@ -288,7 +237,7 @@ class TestSharedRaises(APPTest):
 
     def test_Raise_BadRequestError_when_Bad_state_type(self, client, monkeypatch):
         self.monkeys(client, monkeypatch)
-        for testcase in NOT_STR_TESTCASES:
+        for testcase in TESTCASE_NON_STR_TYPES:
             json_body = {'state': testcase}
             monkeypatch.setattr(Request, 'json_body', json_body)
             with pytest.raises(BadRequestError):
