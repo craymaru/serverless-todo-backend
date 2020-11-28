@@ -1,7 +1,7 @@
 import boto3
 
 
-def create_dynamo_table():
+def create_table():
     """DynamoDBのテーブル作成"""
 
     mock_dynamodb = boto3.resource("dynamodb")
@@ -20,7 +20,6 @@ def create_dynamo_table():
             "WriteCapacityUnits": 5,
         },
     )
-
     return mock_table
 
 
