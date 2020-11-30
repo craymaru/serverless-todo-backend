@@ -15,8 +15,9 @@ _DB = None
 app = Chalice(app_name='serverless-todo-backend')
 app.debug = True
 authorizer = CognitoUserPoolAuthorizer(
-    'ToDoAppUserPool', provider_arns=[os.environ['USER_POOL_ARN']]
+    'ToDoAppUserPool', provider_arns=[os.environ.get('USER_POOL_ARN')]
 )
+
 
 def get_app_db():
     """ TodoのDynamoDBテーブルを取得
@@ -186,6 +187,7 @@ def update_todo(uid):
         description=description,
         state=state
     )
+
 
 @app.route('/')
 def get_index():
