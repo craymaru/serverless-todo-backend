@@ -2,16 +2,21 @@ import os
 
 import boto3
 from chalice import Chalice
+from chalice import CognitoUserPoolAuthorizer
 from chalice.app import BadRequestError
 
 from chalicelib import db
 from chalicelib.validates import Validates
 
-app = Chalice(app_name='serverless-todo-backend')
-app.debug = True
 
 _DB = None
 
+
+app = Chalice(app_name='serverless-todo-backend')
+app.debug = True
+authorizer = CognitoUserPoolAuthorizer(
+    'ToDoAppUserPool', provider_arns=[os.environ['USER_POOL_ARN']]
+)
 
 def get_app_db():
     """ TodoのDynamoDBテーブルを取得
@@ -49,7 +54,7 @@ def get_app_db():
     return _DB
 
 
-@app.route('/todos', methods=['GET'])
+@app.route('/todos', methods=['GET'], authorizer=authorizer)
 def get_todos():
     """ Todoのリストを取得
 
@@ -81,7 +86,7 @@ def get_todos():
     return get_app_db().list_items(query=query)
 
 
-@app.route('/todos', methods=['POST'])
+@app.route('/todos', methods=['POST'], authorizer=authorizer)
 def add_new_todo():
     """ 新しいTodoを登録
 
@@ -113,7 +118,7 @@ def add_new_todo():
     )
 
 
-@app.route('/todos/{uid}', methods=['GET'])
+@app.route('/todos/{uid}', methods=['GET'], authorizer=authorizer)
 def get_todo(uid):
     """ 特定のTodoを取得
 
@@ -129,7 +134,7 @@ def get_todo(uid):
     return get_app_db().get_item(uid=uid)
 
 
-@app.route('/todos/{uid}', methods=['DELETE'])
+@app.route('/todos/{uid}', methods=['DELETE'], authorizer=authorizer)
 def delete_todo(uid):
     """ 特定のTodoを削除
 
@@ -145,7 +150,7 @@ def delete_todo(uid):
     return get_app_db().delete_item(uid=uid)
 
 
-@app.route('/todos/{uid}', methods=['PUT'])
+@app.route('/todos/{uid}', methods=['PUT'], authorizer=authorizer)
 def update_todo(uid):
     """ 特定のTodoを更新
 
@@ -184,4 +189,4 @@ def update_todo(uid):
 
 @app.route('/')
 def get_index():
-    return {'message': 'serverless todo api'}
+    return {'message': 'Welcome to serverless-todo api!'}
