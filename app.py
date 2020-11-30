@@ -127,7 +127,7 @@ def get_todo(uid):
         dict: 特定のTodoを返す
 
     """
-    return get_app_db().get_item(uid)
+    return get_app_db().get_item(uid=uid)
 
 
 @app.route('/todos/{uid}', methods=['DELETE'])
@@ -143,7 +143,7 @@ def delete_todo(uid):
         uid: (str): 正常に削除されたTodoのuidを返す
 
     """
-    return get_app_db().delete_item(uid)
+    return get_app_db().delete_item(uid=uid)
 
 
 @app.route('/todos/{uid}', methods=['PUT'])
@@ -177,7 +177,7 @@ def update_todo(uid):
     # validates.username(username)
 
     return get_app_db().update_item(
-        uid,
+        uid=uid,
         subject=subject,
         description=description,
         state=state
