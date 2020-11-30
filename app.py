@@ -1,5 +1,4 @@
 import os
-from re import search
 
 import boto3
 from chalice import Chalice
