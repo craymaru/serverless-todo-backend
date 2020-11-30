@@ -1,4 +1,4 @@
-TESTCASE_DDB_RESPONSE_ITEMS = [
+TESTDATA_DDB_ITEMS = [
     {
         "uid": "37dc42c4-a2df-4606-8b3c-eb6332ef9699",
         "subject": "Make cat tower 🐈",
