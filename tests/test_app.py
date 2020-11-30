@@ -50,9 +50,9 @@ class TestAddNewTodo(TestApp):
         super().set_env(client, monkeypatch)
         from uuid import uuid4
         monkeypatch.setattr(DynamoDBTodo, 'add_item',
-                            lambda *args, **kwargs: str(uuid4()))
+                            lambda *_, **__: str(uuid4()))
         monkeypatch.setattr(app, 'get_authorized_username',
-                            lambda _: 'default')
+                            lambda *_, **__: 'default')
 
     @pytest.mark.parametrize('item', TESTDATA_DDB_ITEMS)
     def test_Return_uid_when_Post_subject_and_description(self, client, monkeypatch, item):
@@ -108,7 +108,7 @@ class TestGetTodo(TestApp):
     def test_Return_todo_dict(self, monkeypatch, item):
         self._monkeys(monkeypatch)
         monkeypatch.setattr(app, 'get_authorized_username',
-                            lambda _: item['username'])
+                            lambda *_, **__: item['username'])
         assert app.get_todo(uid=item['uid']) == item
 
 
@@ -125,7 +125,7 @@ class TestDeleteTodo(TestApp):
     def test_Return_uid(self, monkeypatch, item):
         self._monkeys(monkeypatch)
         monkeypatch.setattr(app, 'get_authorized_username',
-                            lambda _: item['username'])
+                            lambda *_, **__: item['username'])
         assert app.delete_todo(uid=item['uid']) == item['uid']
 
 
@@ -134,13 +134,13 @@ class TestUpdateTodo(TestApp):
     def _monkeys(self, client, monkeypatch, item=None):
         super().set_env(client, monkeypatch)
 
-        def _update_item(self, uid, username, **kwargs):
+        def _update_item(self, uid, username, **__):
             for item in TESTDATA_DDB_ITEMS:
                 if item['uid'] == uid and item['username'] == username:
                     return item['uid']
         monkeypatch.setattr(DynamoDBTodo, 'update_item', _update_item)
         monkeypatch.setattr(app, 'get_authorized_username',
-                            lambda _: item['username'])
+                            lambda *_, **__: item['username'])
 
     @pytest.mark.parametrize('item', TESTDATA_DDB_ITEMS)
     def test_Return_uid_when_Update_subject_description_state(self, client, monkeypatch, item):
@@ -185,9 +185,9 @@ class TestSharedRaises(TestApp):
     def _monkeys(self, client, monkeypatch):
         super().set_env(client, monkeypatch)
         monkeypatch.setattr(DynamoDBTodo, 'add_item',
-                            lambda *args, **kwargs: self.expected_str)
+                            lambda *_, **__: self.expected_str)
         monkeypatch.setattr(DynamoDBTodo, 'update_item',
-                            lambda *args, **kwargs: self.expected_str)
+                            lambda *_, **__: self.expected_str)
 
     def Raise_BadRequestError_when_None_json_body(self, client, monkeypatch):
         self._monkeys(client, monkeypatch)
