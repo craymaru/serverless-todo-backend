@@ -8,16 +8,15 @@ import app
 from chalicelib import validates
 from chalicelib.db import DynamoDBTodo
 
-from tests.conftest import APP_TABLE_NAME
-from tests.testcases.ddb_response_items import TESTCASE_DDB_RESPONSE_ITEMS
-from tests.testcases.non_str_types import TESTCASE_NON_STR_TYPES
+from tests.testdata.ddb_items import TESTDATA_DDB_ITEMS
+from tests.testdata.non_str_types import TESTDATA_NON_STR_TYPES
 
 
-class APPTest:
+class TestApp:
 
     @staticmethod
-    def monkeys(monkeypatch):
-        monkeypatch.setenv('APP_TABLE_NAME', APP_TABLE_NAME)
+    def set_env(client):
+        client.get('/')
 
 
 class TestGetIndex:
@@ -27,154 +26,161 @@ class TestGetIndex:
         assert response.json == {'message': 'serverless todo api'}
 
 
-class TestGetAppDB(APPTest):
+class TestGetAppDB(TestApp):
 
-    def monkeys(self, monkeypatch):
-        super().monkeys(monkeypatch)
-
-    def test_Return_DynamoDBTodo_class(self, monkeypatch):
-        self.monkeys(monkeypatch)
-        assert app.get_app_db().__class__ == DynamoDBTodo("").__class__
+    def test_Return_DynamoDBTodo_class(self):
+        assert app.get_app_db().__class__ == DynamoDBTodo
 
 
-class TestGetTodos(APPTest):
-    expected_list = TESTCASE_DDB_RESPONSE_ITEMS
+class TestGetTodos(TestApp):
 
-    def monkeys(self, client, monkeypatch):
-        super().monkeys(monkeypatch)
-        client.get('/')
+    def _monkeys(self, client, monkeypatch):
+        super().set_env(client)
         monkeypatch.setattr(DynamoDBTodo, 'list_items',
-                            lambda *args, **kwargs: self.expected_list)
+                            lambda *args, **kwargs: TESTDATA_DDB_ITEMS)
 
     def test_Return_todos_list(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
-        assert app.get_todos() == self.expected_list
+        self._monkeys(client, monkeypatch)
+        assert app.get_todos() == TESTDATA_DDB_ITEMS
 
 
-class TestAddNewTodo(APPTest):
-    expected_str = TESTCASE_DDB_RESPONSE_ITEMS[0]['uid']
+class TestAddNewTodo(TestApp):
 
-    def monkeys(self, client, monkeypatch):
-        super().monkeys(monkeypatch)
-        client.get('/')
+    def _monkeys(self, client, monkeypatch, item):
+        super().set_env(client)
+        from uuid import uuid4
         monkeypatch.setattr(DynamoDBTodo, 'add_item',
-                            lambda *args, **kwargs: self.expected_str)
+                            lambda *args, **kwargs: str(uuid4()))
 
-    def test_Return_uid_when_Post_subject_and_description(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
+    @pytest.mark.parametrize('item', [item for item in TESTDATA_DDB_ITEMS])
+    def test_Return_uid_when_Post_subject_and_description(self, client, monkeypatch, item):
+        self._monkeys(client, monkeypatch, item)
         json_body = {'subject': 'neko', 'description': 'meow'}
         monkeypatch.setattr(Request, 'json_body', json_body)
-        assert app.add_new_todo() == self.expected_str
+        actual = app.add_new_todo()
+        assert type(actual) == str
+        assert len(actual) == 36
 
-    def test_Return_uid_when_Post_subject_only(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
+    @pytest.mark.parametrize('item', [item for item in TESTDATA_DDB_ITEMS])
+    def test_Return_uid_when_Post_subject_only(self, client, monkeypatch, item):
+        self._monkeys(client, monkeypatch, item)
         json_body = {'subject': 'neko'}
         monkeypatch.setattr(Request, 'json_body', json_body)
-        assert app.add_new_todo() == self.expected_str
+        actual = app.add_new_todo()
+        assert type(actual) == str
+        assert len(actual) == 36
 
-    def test_Raise_BadRequestError_when_None_subject(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
+    @pytest.mark.parametrize('item', [item for item in TESTDATA_DDB_ITEMS])
+    def test_Raise_BadRequestError_when_None_subject(self, client, monkeypatch, item):
+        self._monkeys(client, monkeypatch, item)
         json_body = {}
         monkeypatch.setattr(Request, 'json_body', json_body)
         with pytest.raises(BadRequestError):
-            app.add_new_todo() == self.expected_str
+            app.add_new_todo()
 
-    def test_Raise_BadRequestError_when_Post_without_subject(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
+    @pytest.mark.parametrize('item', [item for item in TESTDATA_DDB_ITEMS])
+    def test_Raise_BadRequestError_when_Post_without_subject(self, client, monkeypatch, item):
+        self._monkeys(client, monkeypatch, item)
         json_body = {'description': 'meow'}
         monkeypatch.setattr(Request, 'json_body', json_body)
         with pytest.raises(BadRequestError):
-            app.add_new_todo() == self.expected_str
+            app.add_new_todo()
 
 
-class TestGetTodo(APPTest):
-    expected_dict = TESTCASE_DDB_RESPONSE_ITEMS[0]
+class TestGetTodo(TestApp):
 
-    def monkeys(self, monkeypatch):
-        super().monkeys(monkeypatch)
-        monkeypatch.setattr(DynamoDBTodo, 'get_item',
-                            lambda *_: self.expected_dict)
+    def _monkeys(self, monkeypatch):
+        def _get_item(self, uid):
+            for item in TESTDATA_DDB_ITEMS:
+                if item['uid'] == uid:
+                    return item
+        monkeypatch.setattr(DynamoDBTodo, 'get_item', _get_item)
 
-    def test_Return_todo_dict(self, client, monkeypatch):
-        self.monkeys(monkeypatch)
-        uid = self.expected_dict['uid']
-        actual = app.get_todo({uid})
-        assert actual == self.expected_dict
-
-
-class TestDeleteTodo(APPTest):
-    expected_str = TESTCASE_DDB_RESPONSE_ITEMS[0]['uid']
-
-    def monkeys(self, monkeypatch):
-        super().monkeys(monkeypatch)
-        monkeypatch.setattr(DynamoDBTodo, 'delete_item',
-                            lambda *_: self.expected_str)
-
-    def test_Return_uid(self, monkeypatch):
-        self.monkeys(monkeypatch)
-        uid = self.expected_str
-        actual = app.delete_todo({uid})
-        assert actual == self.expected_str
+    @pytest.mark.parametrize('item', [item for item in TESTDATA_DDB_ITEMS])
+    def test_Return_todo_dict(self, monkeypatch, item):
+        self._monkeys(monkeypatch)
+        assert app.get_todo(uid=item['uid']) == item
 
 
-class TestUpdateTodo(APPTest):
-    expected_str = TESTCASE_DDB_RESPONSE_ITEMS[0]['uid']
+class TestDeleteTodo(TestApp):
 
-    def monkeys(self, client, monkeypatch):
-        super().monkeys(monkeypatch)
-        client.get('/')
-        monkeypatch.setattr(DynamoDBTodo, 'update_item',
-                            lambda *args, **kwargs: self.expected_str)
+    def _monkeys(self, monkeypatch):
+        def _delete_item(self, uid):
+            for item in TESTDATA_DDB_ITEMS:
+                if item['uid'] == uid:
+                    return item['uid']
+        monkeypatch.setattr(DynamoDBTodo, 'delete_item', _delete_item)
 
-    def test_Return_uid_when_Update_subject_description_and_state(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
+    @pytest.mark.parametrize('item', [item for item in TESTDATA_DDB_ITEMS])
+    def test_Return_uid(self, monkeypatch, item):
+        self._monkeys(monkeypatch)
+        assert app.delete_todo(uid=item['uid']) == item['uid']
+
+
+class TestUpdateTodo(TestApp):
+
+    def _monkeys(self, client, monkeypatch):
+
+        super().set_env(client)
+
+        def _update_item(self, uid, **kwargs):
+            for item in TESTDATA_DDB_ITEMS:
+                if item['uid'] == uid:
+                    return item['uid']
+        monkeypatch.setattr(DynamoDBTodo, 'update_item', _update_item)
+
+    @pytest.mark.parametrize('item', [item for item in TESTDATA_DDB_ITEMS])
+    def test_Return_uid_when_Update_subject_description_and_state(self, client, monkeypatch, item):
+        self._monkeys(client, monkeypatch)
         json_body = {
             'subject': 'neko',
             'description': 'meow',
             'state': 'completed'
         }
         monkeypatch.setattr(Request, 'json_body', json_body)
-        assert app.update_todo("_uid") == self.expected_str
+        assert app.update_todo(item['uid']) == item['uid']
 
-    def test_Return_uid_when_Update_subject_only(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
+    @pytest.mark.parametrize('item', [item for item in TESTDATA_DDB_ITEMS])
+    def test_Return_uid_when_Update_subject_only(self, client, monkeypatch, item):
+        self._monkeys(client, monkeypatch)
         json_body = {'subject': 'neko'}
         monkeypatch.setattr(Request, 'json_body', json_body)
-        assert app.update_todo("_uid") == self.expected_str
+        assert app.update_todo(item['uid']) == item['uid']
 
-    def test_Return_uid_when_Update_discription_only(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
+    @pytest.mark.parametrize('item', [item for item in TESTDATA_DDB_ITEMS])
+    def test_Return_uid_when_Update_discription_only(self, client, monkeypatch, item):
+        self._monkeys(client, monkeypatch)
         json_body = {'discription': 'neko'}
         monkeypatch.setattr(Request, 'json_body', json_body)
-        assert app.update_todo("_uid") == self.expected_str
+        assert app.update_todo(item['uid']) == item['uid']
 
-    def test_Return_uid_when_Update_state_only(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
+    @pytest.mark.parametrize('item', [item for item in TESTDATA_DDB_ITEMS])
+    def test_Return_uid_when_Update_state_only(self, client, monkeypatch, item):
+        self._monkeys(client, monkeypatch)
         json_body = {'state': 'completed'}
         monkeypatch.setattr(Request, 'json_body', json_body)
-        assert app.update_todo("_uid") == self.expected_str
+        assert app.update_todo(item['uid']) == item['uid']
 
 
-class TestSharedRaises(APPTest):
-    expected_str = TESTCASE_DDB_RESPONSE_ITEMS[0]['uid']
+class TestSharedRaises(TestApp):
+    expected_str = TESTDATA_DDB_ITEMS[0]['uid']
 
-    def monkeys(self, client, monkeypatch):
-        super().monkeys(monkeypatch)
-        client.get('/')
+    def _monkeys(self, client, monkeypatch):
+        super().set_env(client)
         monkeypatch.setattr(DynamoDBTodo, 'add_item',
                             lambda *args, **kwargs: self.expected_str)
         monkeypatch.setattr(DynamoDBTodo, 'update_item',
                             lambda *args, **kwargs: self.expected_str)
 
     def test_Raise_BadRequestError_when_None_json_body(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
+        self._monkeys(client, monkeypatch)
         with pytest.raises(BadRequestError):
             app.add_new_todo() == self.expected_str
         with pytest.raises(BadRequestError):
             app.update_todo("_uid") == self.expected_str
 
     def test_Raise_BadRequestError_when_Bad_subject_length(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
+        self._monkeys(client, monkeypatch)
         testcases = [
             '_' * (validates.SUBJECT_MIN_LEN - 1),
             '_' * (validates.SUBJECT_MAX_LEN + 1),
@@ -189,8 +195,8 @@ class TestSharedRaises(APPTest):
                 app.update_todo("_uid") == self.expected_str
 
     def test_Raise_BadRequestError_when_Bad_subject_type(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
-        for testcase in TESTCASE_NON_STR_TYPES:
+        self._monkeys(client, monkeypatch)
+        for testcase in TESTDATA_NON_STR_TYPES:
             json_body = {'subject': testcase}
             monkeypatch.setattr(Request, 'json_body', json_body)
             with pytest.raises(BadRequestError):
@@ -199,7 +205,7 @@ class TestSharedRaises(APPTest):
                 app.update_todo("_uid") == self.expected_str
 
     def test_Raise_BadRequestError_when_Bad_discription_length(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
+        self._monkeys(client, monkeypatch)
         testcases = [
             '_' * (validates.DESCRIPTION_MAX_LEN + 1),
             '_' * (validates.DESCRIPTION_MAX_LEN * 10)
@@ -213,8 +219,8 @@ class TestSharedRaises(APPTest):
                 app.update_todo("_uid") == self.expected_str
 
     def test_Raise_BadRequestError_when_Bad_description_type(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
-        for testcase in TESTCASE_NON_STR_TYPES:
+        self._monkeys(client, monkeypatch)
+        for testcase in TESTDATA_NON_STR_TYPES:
             json_body = {'description': testcase}
             monkeypatch.setattr(Request, 'json_body', json_body)
             with pytest.raises(BadRequestError):
@@ -223,7 +229,7 @@ class TestSharedRaises(APPTest):
                 app.update_todo("_uid") == self.expected_str
 
     def test_Raise_BadRequestError_when_Bad_state_name(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
+        self._monkeys(client, monkeypatch)
         testcases = ["unknown_state"] \
             + [state + " " for state in validates.STATE_ENUM] \
             + [" " + state for state in validates.STATE_ENUM]
@@ -236,8 +242,8 @@ class TestSharedRaises(APPTest):
                 app.update_todo("_uid") == self.expected_str
 
     def test_Raise_BadRequestError_when_Bad_state_type(self, client, monkeypatch):
-        self.monkeys(client, monkeypatch)
-        for testcase in TESTCASE_NON_STR_TYPES:
+        self._monkeys(client, monkeypatch)
+        for testcase in TESTDATA_NON_STR_TYPES:
             json_body = {'state': testcase}
             monkeypatch.setattr(Request, 'json_body', json_body)
             with pytest.raises(BadRequestError):
