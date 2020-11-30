@@ -42,11 +42,11 @@ class DynamoDBTodo():
         return response['Items']
 
     @except_endpoint_connection_error
-    def add_item(self, subject, description=None, username=DEFAULT_USERNAME):
+    def add_item(self, subject, description='', username=DEFAULT_USERNAME):
         item = {
             'uid': str(uuid4()),
             'subject': subject,
-            'description': description if description is not None else "",
+            'description': description,
             'state': 'unstarted',
             'username': username
         }
