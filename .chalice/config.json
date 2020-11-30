@@ -5,14 +5,17 @@
     "local": {
       "environment_variables": {
         "DYNAMO_DB_ENDPOINT": "http://127.0.0.1:8005",
-        "APP_TABLE_NAME": "serverless-todo"
+        "APP_TABLE_NAME": "serverless-todo",
+        "USER_POOL_ARN": "arn:aws:cognito-idp:ap-northeast-1:142603634782:userpool/ap-northeast-1_Lm0D11PZ8"
+        
       }
     },
     "dev": {
       "autogen_policy": false,
       "api_gateway_stage": "api",
       "environment_variables": {
-        "APP_TABLE_NAME": "serverless-todo-backend-f71fb8af-5dc0-4c8f-bdaf-e7e2d7124b7f"
+        "APP_TABLE_NAME": "serverless-todo-backend-f71fb8af-5dc0-4c8f-bdaf-e7e2d7124b7f",
+        "USER_POOL_ARN": "arn:aws:cognito-idp:ap-northeast-1:142603634782:userpool/ap-northeast-1_Lm0D11PZ8"
       }
     }
   }
