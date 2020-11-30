@@ -19,6 +19,15 @@ authorizer = CognitoUserPoolAuthorizer(
 )
 
 
+def get_authorized_username(current_request):
+    """ Auth時のトークンからcognito:usernameを取得"""
+    try:
+        username = current_request.context['authorizer']['claims']["cognito:username"]
+    except KeyError:
+        username = None
+    return username
+
+
 def get_app_db():
     """ TodoのDynamoDBテーブルを取得
 
@@ -77,6 +86,7 @@ def get_todos():
         (* 上記のコマンドは httpie パッケージを使用しています)
 
     """
+    username = get_authorized_username(app.current_request)
     query = ''
     params = app.current_request.query_params
     if params is not None:
@@ -84,7 +94,7 @@ def get_todos():
             if key in params:
                 query = params[key]
                 break
-    return get_app_db().list_items(query=query)
+    return get_app_db().list_items(query=query, username=username)
 
 
 @app.route('/todos', methods=['POST'], authorizer=authorizer)
@@ -108,14 +118,16 @@ def add_new_todo():
 
     subject = body.get('subject')
     description = body.get('description')
+    username = get_authorized_username(app.current_request)
 
     Validates.subject(subject)
     Validates.description(description) if description is not None else None
-    # Validates.username(username)
+    Validates.username(username)
 
     return get_app_db().add_item(
         subject=subject,
         description=description,
+        username=username
     )
 
 
@@ -132,7 +144,8 @@ def get_todo(uid):
         dict: 特定のTodoを返す
 
     """
-    return get_app_db().get_item(uid=uid)
+    username = get_authorized_username(app.current_request)
+    return get_app_db().get_item(uid=uid, username=username)
 
 
 @app.route('/todos/{uid}', methods=['DELETE'], authorizer=authorizer)
@@ -148,7 +161,8 @@ def delete_todo(uid):
         uid: (str): 正常に削除されたTodoのuidを返す
 
     """
-    return get_app_db().delete_item(uid=uid)
+    username = get_authorized_username(app.current_request)
+    return get_app_db().delete_item(uid=uid, username=username)
 
 
 @app.route('/todos/{uid}', methods=['PUT'], authorizer=authorizer)
@@ -175,17 +189,19 @@ def update_todo(uid):
     subject = body.get('subject')
     description = body.get('description')
     state = body.get('state')
+    username = get_authorized_username(app.current_request)
 
     Validates.subject(subject) if subject is not None else None
     Validates.description(description) if description is not None else None
     Validates.state(state) if state is not None else None
-    # Validates.username(username)
+    Validates.username(username)
 
     return get_app_db().update_item(
         uid=uid,
         subject=subject,
         description=description,
-        state=state
+        state=state,
+        username=username
     )
 
 
