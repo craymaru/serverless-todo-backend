@@ -95,10 +95,10 @@ class DynamoDBTodo():
             validates.subject(subject)
             item['subject'] = subject
         if description is not None:
-            validates.subject(description)
+            validates.description(description)
             item['description'] = description
         if state is not None:
-            validates.subject(state)
+            validates.state(state)
             item['state'] = state
         response = self._table.put_item(Item=item, ReturnValues='ALL_OLD')
         try:
