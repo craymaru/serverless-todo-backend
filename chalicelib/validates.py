@@ -1,5 +1,6 @@
 from chalice import BadRequestError
 
+
 class Validates:
 
     SUBJECT_MIN_LEN = 1
@@ -31,6 +32,9 @@ class Validates:
 
     @staticmethod
     def description(description):
+        if description is None:
+            return None
+
         description_type = type(description)
         if description_type is not str:
             raise BadRequestError(
@@ -43,6 +47,23 @@ class Validates:
                 "Bad subject length. "
                 f"REQUIRED: less than or equal to {Validates.DESCRIPTION_MAX_LEN} "
                 f"(yours: {description_length})")
+
+    @staticmethod
+    def state(state):
+        if state is None:
+            raise BadRequestError(
+                f"State is None. (yours: {state})")
+
+        state_type = type(state)
+        if state_type is not str:
+            raise BadRequestError(
+                "Bad state type. "
+                f"REQUIRED: {str} (yours: {state_type})")
+
+        if not state in Validates.STATE_ENUM:
+            raise BadRequestError(
+                "Bad state. "
+                f"REQUIRED: strings of {', '.join(Validates.STATE_ENUM)} (yours: {state})")
 
     @staticmethod
     def username(username):
@@ -63,20 +84,3 @@ class Validates:
                 f"REQUIRED: greater than or equal to {Validates.USERNAME_MIN_LEN}, "
                 f"less than {Validates.USERNAME_MAX_LEN} "
                 f"(yours: {username_length})")
-
-    @staticmethod
-    def state(state):
-        if state is None:
-            raise BadRequestError(
-                f"State is None. (yours: {state})")
-
-        state_type = type(state)
-        if state_type is not str:
-            raise BadRequestError(
-                "Bad state type. "
-                f"REQUIRED: {str} (yours: {state_type})")
-
-        if not state in Validates.STATE_ENUM:
-            raise BadRequestError(
-                "Bad state. "
-                f"REQUIRED: strings of {', '.join(Validates.STATE_ENUM)} (yours: {state})")
