@@ -47,5 +47,19 @@ TESTDATA_DDB_ITEMS = [
         "description": "👩‍❤️‍👩เดทคู่👨‍❤️‍👨",
         "state": "completed",
         "username": "default"
+    },
+    {
+        "uid": "72e728a4-43a3-40be-b8cf-611161d9d816",
+        "subject": "another users subject",
+        "description": "another users discription",
+        "state": "completed",
+        "username": "meow"
+    },
+    {
+        "uid": "96ea2fbd-1ddb-4d28-8ec5-d30f9ca497e5",
+        "subject": "another users subject",
+        "description": "another users discription",
+        "state": "started",
+        "username": "wanwan"
     }
 ]
