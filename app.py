@@ -6,7 +6,7 @@ from chalice import Chalice
 from chalice.app import BadRequestError
 
 from chalicelib import db
-from chalicelib import validates
+from chalicelib.validates import Validates
 
 app = Chalice(app_name='serverless-todo-backend')
 app.debug = True
@@ -104,9 +104,9 @@ def add_new_todo():
     subject = body.get('subject')
     description = body.get('description')
 
-    validates.subject(subject)
-    validates.description(description) if description is not None else None
-    # validates.username(username)
+    Validates.subject(subject)
+    Validates.description(description) if description is not None else None
+    # Validates.username(username)
 
     return get_app_db().add_item(
         subject=subject,
@@ -171,10 +171,10 @@ def update_todo(uid):
     description = body.get('description')
     state = body.get('state')
 
-    validates.subject(subject) if subject is not None else None
-    validates.description(description) if description is not None else None
-    validates.state(state) if state is not None else None
-    # validates.username(username)
+    Validates.subject(subject) if subject is not None else None
+    Validates.description(description) if description is not None else None
+    Validates.state(state) if state is not None else None
+    # Validates.username(username)
 
     return get_app_db().update_item(
         uid=uid,

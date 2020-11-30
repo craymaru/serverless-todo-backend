@@ -5,7 +5,7 @@ from botocore.exceptions import EndpointConnectionError
 from boto3.dynamodb.conditions import Key, Attr
 from chalice import NotFoundError
 
-from chalicelib import validates
+from chalicelib.validates import Validates
 from chalicelib.exceptions import DatabaseConnectionError
 
 
@@ -50,10 +50,10 @@ class DynamoDBTodo():
             'state': 'unstarted',
             'username': username
         }
-        validates.subject(item['subject'])
-        validates.description(item['description'])
-        validates.state(item['state'])
-        validates.username(item['username'])
+        Validates.subject(item['subject'])
+        Validates.description(item['description'])
+        Validates.state(item['state'])
+        Validates.username(item['username'])
 
         self._table.put_item(Item=item, ReturnValues='ALL_OLD')
         return item['uid']
@@ -73,7 +73,7 @@ class DynamoDBTodo():
 
     @except_endpoint_connection_error
     def delete_item(self, uid, username=DEFAULT_USERNAME):
-        validates.username(username)
+        Validates.username(username)
         response = self._table.delete_item(
             Key={
                 'username': username,
@@ -89,16 +89,16 @@ class DynamoDBTodo():
     @except_endpoint_connection_error
     def update_item(self, uid, subject=None, description=None,
                     state=None, username=DEFAULT_USERNAME):
-        validates.username(username)
+        Validates.username(username)
         item = self.get_item(uid, username)
         if subject is not None:
-            validates.subject(subject)
+            Validates.subject(subject)
             item['subject'] = subject
         if description is not None:
-            validates.description(description)
+            Validates.description(description)
             item['description'] = description
         if state is not None:
-            validates.state(state)
+            Validates.state(state)
             item['state'] = state
         response = self._table.put_item(Item=item, ReturnValues='ALL_OLD')
         try:

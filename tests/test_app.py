@@ -5,7 +5,7 @@ from chalice import BadRequestError
 from chalice.app import Request
 
 import app
-from chalicelib import validates
+from chalicelib.validates import Validates
 from chalicelib.db import DynamoDBTodo
 
 from tests.testdata.ddb_items import TESTDATA_DDB_ITEMS
@@ -182,9 +182,9 @@ class TestSharedRaises(TestApp):
     def test_Raise_BadRequestError_when_Bad_subject_length(self, client, monkeypatch):
         self._monkeys(client, monkeypatch)
         testcases = [
-            '_' * (validates.SUBJECT_MIN_LEN - 1),
-            '_' * (validates.SUBJECT_MAX_LEN + 1),
-            '_' * (validates.SUBJECT_MAX_LEN * 10)
+            '_' * (Validates.SUBJECT_MIN_LEN - 1),
+            '_' * (Validates.SUBJECT_MAX_LEN + 1),
+            '_' * (Validates.SUBJECT_MAX_LEN * 10)
         ]
         for testcase in testcases:
             json_body = {'subject': testcase}
@@ -207,8 +207,8 @@ class TestSharedRaises(TestApp):
     def test_Raise_BadRequestError_when_Bad_discription_length(self, client, monkeypatch):
         self._monkeys(client, monkeypatch)
         testcases = [
-            '_' * (validates.DESCRIPTION_MAX_LEN + 1),
-            '_' * (validates.DESCRIPTION_MAX_LEN * 10)
+            '_' * (Validates.DESCRIPTION_MAX_LEN + 1),
+            '_' * (Validates.DESCRIPTION_MAX_LEN * 10)
         ]
         for testcase in testcases:
             json_body = {'description': testcase}
@@ -231,8 +231,8 @@ class TestSharedRaises(TestApp):
     def test_Raise_BadRequestError_when_Bad_state_name(self, client, monkeypatch):
         self._monkeys(client, monkeypatch)
         testcases = ["unknown_state"] \
-            + [state + " " for state in validates.STATE_ENUM] \
-            + [" " + state for state in validates.STATE_ENUM]
+            + [state + " " for state in Validates.STATE_ENUM] \
+            + [" " + state for state in Validates.STATE_ENUM]
         for testcase in testcases:
             json_body = {'state': testcase}
             monkeypatch.setattr(Request, 'json_body', json_body)
