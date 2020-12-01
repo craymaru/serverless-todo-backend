@@ -64,7 +64,7 @@ def get_app_db():
     return _DB
 
 
-@app.route('/todos', methods=['GET'], authorizer=authorizer)
+@app.route('/todos', methods=['GET'], cors=True, authorizer=authorizer)
 def get_todos():
     """ Todoのリストを取得
 
@@ -97,7 +97,7 @@ def get_todos():
     return get_app_db().list_items(query=query, username=username)
 
 
-@app.route('/todos', methods=['POST'], authorizer=authorizer)
+@app.route('/todos', methods=['POST'], cors=True, authorizer=authorizer)
 def add_new_todo():
     """ 新しいTodoを登録
 
@@ -131,7 +131,7 @@ def add_new_todo():
     )
 
 
-@app.route('/todos/{uid}', methods=['GET'], authorizer=authorizer)
+@app.route('/todos/{uid}', methods=['GET'], cors=True, authorizer=authorizer)
 def get_todo(uid):
     """ 特定のTodoを取得
 
@@ -148,7 +148,7 @@ def get_todo(uid):
     return get_app_db().get_item(uid=uid, username=username)
 
 
-@app.route('/todos/{uid}', methods=['DELETE'], authorizer=authorizer)
+@app.route('/todos/{uid}', methods=['DELETE'], cors=True, authorizer=authorizer)
 def delete_todo(uid):
     """ 特定のTodoを削除
 
@@ -165,7 +165,7 @@ def delete_todo(uid):
     return get_app_db().delete_item(uid=uid, username=username)
 
 
-@app.route('/todos/{uid}', methods=['PUT'], authorizer=authorizer)
+@app.route('/todos/{uid}', methods=['PUT'], cors=True, authorizer=authorizer)
 def update_todo(uid):
     """ 特定のTodoを更新
 
@@ -205,6 +205,6 @@ def update_todo(uid):
     )
 
 
-@app.route('/')
+@app.route('/', cors=True)
 def get_index():
     return {'message': 'Welcome to serverless-todo api!'}
