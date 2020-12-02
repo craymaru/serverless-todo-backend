@@ -7,7 +7,6 @@
         "DYNAMO_DB_ENDPOINT": "http://127.0.0.1:8005",
         "APP_TABLE_NAME": "serverless-todo",
         "USER_POOL_ARN": "arn:aws:cognito-idp:ap-northeast-1:142603634782:userpool/ap-northeast-1_Lm0D11PZ8"
-        
       }
     },
     "dev": {
