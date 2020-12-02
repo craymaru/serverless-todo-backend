@@ -29,6 +29,10 @@ def create_table(table_name_prefix, hash_key, range_key=None):
             'AttributeType': 'S',
         }
     ]
+    provisioned_throughput = {
+            'ReadCapacityUnits': 5,
+            'WriteCapacityUnits': 5,
+        }
     if range_key is not None:
         key_schema.append({'AttributeName': range_key, 'KeyType': 'RANGE'})
         attribute_definitions.append(
@@ -37,10 +41,7 @@ def create_table(table_name_prefix, hash_key, range_key=None):
         TableName=table_name,
         KeySchema=key_schema,
         AttributeDefinitions=attribute_definitions,
-        ProvisionedThroughput={
-            'ReadCapacityUnits': 5,
-            'WriteCapacityUnits': 5,
-        }
+        ProvisionedThroughput=provisioned_throughput
     )
     waiter = client.get_waiter('table_exists')
     waiter.wait(TableName=table_name, WaiterConfig={'Delay': 1})

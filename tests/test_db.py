@@ -88,8 +88,7 @@ class TestAddItem(TestDB):
 
 class TestGetItem(TestDB):
 
-    @pytest.mark.parametrize("item", [
-        item for item in TESTDATA_DDB_ITEMS])
+    @pytest.mark.parametrize("item", TESTDATA_DDB_ITEMS)
     def test_Return_item(self, mock, item):
         """get_item: uidが存在するケース、itemを正常に返すことができる"""
         mock.table.put_items(TESTDATA_DDB_ITEMS)
@@ -104,8 +103,7 @@ class TestGetItem(TestDB):
 
 class TestDeleteItem(TestDB):
 
-    @pytest.mark.parametrize("item", [
-        item for item in TESTDATA_DDB_ITEMS])
+    @pytest.mark.parametrize("item", TESTDATA_DDB_ITEMS)
     def test_Return_uid_str(self, mock, item):
         """delete_item: uidが存在するケース、削除したitemのuidを正常に返すことができる"""
         mock.table.put_items([item])
@@ -120,8 +118,7 @@ class TestDeleteItem(TestDB):
 
 class TestUpdateItem(TestDB):
 
-    @pytest.mark.parametrize("item", [
-        item for item in TESTDATA_DDB_ITEMS])
+    @pytest.mark.parametrize("item", TESTDATA_DDB_ITEMS)
     def test_Return_uid_case_all_attributes(self, mock, item):
         """update_item: すべての属性を更新するケース、更新したitemのuidを正常に返すことができる"""
         mock.table.put_items(TESTDATA_DDB_ITEMS)
@@ -133,8 +130,7 @@ class TestUpdateItem(TestDB):
             username=item['username'])
         assert actual == item['uid']
 
-    @pytest.mark.parametrize("item", [
-        item for item in TESTDATA_DDB_ITEMS])
+    @pytest.mark.parametrize("item", TESTDATA_DDB_ITEMS)
     def test_Return_uid_case_subject_only(self, mock, item):
         """update_item: subjectを更新するケース、更新したitemのuidを正常に返すことができる"""
         mock.table.put_items(TESTDATA_DDB_ITEMS)
@@ -144,8 +140,7 @@ class TestUpdateItem(TestDB):
             username=item['username'])
         assert actual == item['uid']
 
-    @pytest.mark.parametrize("item", [
-        item for item in TESTDATA_DDB_ITEMS])
+    @pytest.mark.parametrize("item", TESTDATA_DDB_ITEMS)
     def test_Return_uid_case_description_only(self, mock, item):
         """update_item: descriptionを更新するケース、更新したitemのuidを正常に返すことができる"""
         mock.table.put_items(TESTDATA_DDB_ITEMS)
@@ -155,8 +150,7 @@ class TestUpdateItem(TestDB):
             username=item['username'])
         assert actual == item['uid']
 
-    @pytest.mark.parametrize("item", [
-        item for item in TESTDATA_DDB_ITEMS])
+    @pytest.mark.parametrize("item", TESTDATA_DDB_ITEMS)
     def test_Return_uid_case_state_only(self, mock, item):
         """update_item: stateを更新するケース、更新したitemのuidを正常に返すことができる"""
         mock.table.put_items(TESTDATA_DDB_ITEMS)

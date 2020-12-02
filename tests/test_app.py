@@ -5,11 +5,9 @@ from chalice import BadRequestError
 from chalice.app import Request
 
 import app
-from chalicelib.validates import Validates
 from chalicelib.db import DynamoDBTodo
 
 from tests.testdata.ddb_items import TESTDATA_DDB_ITEMS
-from tests.testdata.non_str_types import TESTDATA_NON_STR_TYPES
 
 
 class TestApp:

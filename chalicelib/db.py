@@ -68,7 +68,7 @@ class DynamoDBTodo():
         try:
             res = response['Item']
         except KeyError:
-            raise NotFoundError(f"Todo not found. (id: {uid}) ")
+            raise NotFoundError(f"Todo not found. (id: {uid})")
         return res
 
     @except_endpoint_connection_error
@@ -83,7 +83,7 @@ class DynamoDBTodo():
         try:
             res = response['Attributes']['uid']
         except KeyError:
-            raise NotFoundError(f"Todo not found. (id: {uid}) ")
+            raise NotFoundError(f"Todo not found. (id: {uid})")
         return res
 
     @except_endpoint_connection_error
@@ -104,5 +104,5 @@ class DynamoDBTodo():
         try:
             res = response['Attributes']['uid']
         except KeyError:
-            raise NotFoundError(f"Todo not found. (id: {uid}) ")
+            raise NotFoundError(f"Todo not found. (id: {uid})")
         return res
