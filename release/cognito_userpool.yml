@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AutoVerifiedAttributes:
+        - email
+      Schema:
+        - Name: email
+          Required: True
+      UserPoolName: ServerlessToDoUserPool
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: True
+          RequireUppercase: True
+          RequireNumbers: False
+          RequireSymbols: False
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: False
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: ToDoAppPoolClient
+      UserPoolId: !Ref CognitoUserPool
+      GenerateSecret: False
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+Outputs:
+  CognitoUserPoolId:
+    Value: !Ref CognitoUserPool
+  CognitoUserPoolArn:
+    Value: !GetAtt CognitoUserPool.Arn
+  CognitoUserPoolClientId:
+    Value: !Ref CognitoUserPoolClient
