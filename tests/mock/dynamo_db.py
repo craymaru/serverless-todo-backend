@@ -4,13 +4,14 @@ import boto3
 class MockDynamoDB():
     """moto.mock_dynamodb2で作成されたDynamoDBを操作"""
 
-    def __init__(self):
-        self.__ddb = None
+    def __init__(self, ddb=None):
+        if ddb is None:
+            ddb = boto3.resource("dynamodb")
+        self.__ddb = ddb
         self.table = None
 
     def create_table(self, *, TableName, KeySchema, AttributeDefinitions, ProvisionedThroughput):
         """DynamoDBのテーブルを作成"""
-        self.__ddb = boto3.resource("dynamodb")
         self.table = MockDynamoDBTable(
             self.__ddb.create_table(
                 TableName=TableName,
@@ -21,7 +22,8 @@ class MockDynamoDB():
         return self
 
     def set_table(self, table):
-        self.table = MockDynamoDBTable(table)
+        self.table = MockDynamoDBTable(self.__ddb.Table(table))
+        return self
 
 
 class MockDynamoDBTable:
