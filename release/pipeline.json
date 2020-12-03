@@ -13,6 +13,24 @@
     }
   },
   "Resources": {
+    "DynamoDBTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          { "AttributeType": "S", "AttributeName": "username" },
+          { "AttributeType": "S", "AttributeName": "uid" }
+        ],
+        "KeySchema": [
+          { "KeyType": "HASH", "AttributeName": "username" },
+          { "KeyType": "RANGE", "AttributeName": "uid" }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "serverless-todo-backend-0a4ca86a-8983-46fe-af1a-96a5a1e5bb12"
+      }
+    },
     "SourceRepository": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
@@ -34,9 +52,7 @@
           "Version": "2012-10-17",
           "Statement": [
             {
-              "Action": [
-                "sts:AssumeRole"
-              ],
+              "Action": ["sts:AssumeRole"],
               "Effect": "Allow",
               "Principal": {
                 "Service": [
@@ -58,20 +74,12 @@
           "Version": "2012-10-17",
           "Statement": [
             {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
+              "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
               "Resource": "*",
               "Effect": "Allow"
             },
             {
-              "Action": [
-                "s3:GetObject",
-                "s3:GetObjectVersion",
-                "s3:PutObject"
-              ],
+              "Action": ["s3:GetObject", "s3:GetObjectVersion", "s3:PutObject"],
               "Resource": "arn:*:s3:::*",
               "Effect": "Allow"
             }
@@ -291,18 +299,12 @@
                   "Effect": "Allow"
                 },
                 {
-                  "Action": [
-                    "cloudwatch:*",
-                    "iam:PassRole"
-                  ],
+                  "Action": ["cloudwatch:*", "iam:PassRole"],
                   "Resource": "*",
                   "Effect": "Allow"
                 },
                 {
-                  "Action": [
-                    "lambda:InvokeFunction",
-                    "lambda:ListFunctions"
-                  ],
+                  "Action": ["lambda:InvokeFunction", "lambda:ListFunctions"],
                   "Resource": "*",
                   "Effect": "Allow"
                 },
@@ -324,10 +326,7 @@
                   "Effect": "Allow"
                 },
                 {
-                  "Action": [
-                    "codebuild:BatchGetBuilds",
-                    "codebuild:StartBuild"
-                  ],
+                  "Action": ["codebuild:BatchGetBuilds", "codebuild:StartBuild"],
                   "Resource": "*",
                   "Effect": "Allow"
                 }
@@ -339,9 +338,7 @@
           "Version": "2012-10-17",
           "Statement": [
             {
-              "Action": [
-                "sts:AssumeRole"
-              ],
+              "Action": ["sts:AssumeRole"],
               "Effect": "Allow",
               "Principal": {
                 "Service": [
@@ -377,9 +374,7 @@
           "Version": "2012-10-17",
           "Statement": [
             {
-              "Action": [
-                "sts:AssumeRole"
-              ],
+              "Action": ["sts:AssumeRole"],
               "Effect": "Allow",
               "Principal": {
                 "Service": [
@@ -395,6 +390,11 @@
     }
   },
   "Outputs": {
+    "DynamoDBTableName": {
+      "Value": {
+        "Ref": "DynamoDBTable"
+      }
+    },
     "SourceRepoURL": {
       "Value": {
         "Fn::GetAtt": "SourceRepository.CloneUrlHttp"
