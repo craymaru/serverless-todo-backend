@@ -62,29 +62,56 @@ API の仕様についてはこちらを参照してください
 
 ### サーバレスアプリケーション
 ![](https://i.imgur.com/ltn85q8.jpg)
-* Amazon API Gateway
-* AWS Lambda
-* Amazon DynamoDB
+[Large Size Image](https://i.imgur.com/ltn85q8.jpg)
+
+Lambda と API Gateway は AWS Chalice を使って実装しました。
+デプロイは CI/CD パイプラインを構築したので後述します。
+
+|Service Name|Note|
+|-|-|
+|Amazon API Gateway|Chalice を使用して開発|
+|AWS Lambda|Chalice を使用して開発|
+|Amazon DynamoDB|Lambda と相性の良い NoSQL を採用|
+|AWS CloudFormation|テスト後の自動デプロイ段階で使用<br>Stack: `serverless-todo-backendBetaStack`|
+
 
 ### 認証
 ![](https://i.imgur.com/XVBXFJT.jpg)
+[Large Size Image](https://i.imgur.com/XVBXFJT.jpg)
 
-* Amazon Cognito
-* AWS CloudFormation
+認証/認可は Amazon Cognito で実装しました。
+
+|Service Name|Note|
+|-|-|
+|Amazon Cognito| `ServerlessToDoUserPool` ユーザープールを作成|
+|AWS CloudFormation|デプロイに使用<br>Stack:`ServerlessToDoUserPool`<br>Path:[`release/cognito_userpool.yml`](/release/cognito_userpool.yml)|
 
 ### CI/CD パイプライン
 ![](https://i.imgur.com/wGxQgHU.jpg)
+[Large Size Image](https://i.imgur.com/wGxQgHU.jpg)
 
-* AWS CloudFormation
-* AWS CodePipeline
-* AWS CodeBuild
-* AWS CodeCommit
-* Amazon S3
+CI/CD パイプラインを構築しました。
+（理由は学習のため、あとで楽するため、カッコイイからです！:satisfied:）
+
+
+|Service Name|Note|
+|-|-|
+|AWS CloudFormation|CodePipeline、CodeCommit、CodeBuild、DynamoDB、S3 のデプロイに使用<br>Stack: `ServerlessToDoPipeline`<br>File: [`release/pipeline.json`](/release/pipeline.json)|
+|AWS CodePipeline| CodeCommit と CodeBuild の連携|
+|AWS CodeCommit|Git リモートリポジトリ|
+|AWS CodeBuild|pytest の実行、Chalice のパッケージング、デプロイのトリガー<br>File: [`buildspec.yml`](/buildspec.yml)|
+|Amazon S3|Chalice がパッケージング時に使用|
+|AWS CloudFormation|自動デプロイ段階で使用<br>Stack: `serverless-todo-backendBetaStack`|
 
 ### その他
-* Amazon CloudWatch
-* AWS IAM
 
+|Service Name|Note|
+|-|-|
+|AWS IAM|以下のエンティティを許可<br>`serverless-todo-backendBetaStack`<br> Lambda<br>`ServerlessToDoPipeline`<br>CloudFormation、CodeBuild、CodePipeline |
+|Amazon CloudWatch|各種ロギング|
+
+---
+<br>
 
 # アプリの設計
 
@@ -92,8 +119,6 @@ API の仕様についてはこちらを参照してください
 <br>
 
 # テストの設計
-
-
 
 今回はユニットテストのみ実施しています。
 `app.py` のテストでは `current_response.json_body` を差し替える必要があったため、pytest-chalice を使用しています。
