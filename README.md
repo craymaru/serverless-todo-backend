@@ -62,7 +62,6 @@ API の仕様についてはこちらを参照してください
 
 ### サーバレスアプリケーション
 ![](https://i.imgur.com/ltn85q8.jpg)
-[Large Size Image](https://i.imgur.com/ltn85q8.jpg)
 
 Lambda と API Gateway は AWS Chalice を使って実装しました。
 デプロイは CI/CD パイプラインを構築したので後述します。
@@ -77,7 +76,6 @@ Lambda と API Gateway は AWS Chalice を使って実装しました。
 
 ### 認証
 ![](https://i.imgur.com/XVBXFJT.jpg)
-[Large Size Image](https://i.imgur.com/XVBXFJT.jpg)
 
 認証/認可は Amazon Cognito で実装しました。
 
@@ -88,7 +86,6 @@ Lambda と API Gateway は AWS Chalice を使って実装しました。
 
 ### CI/CD パイプライン
 ![](https://i.imgur.com/wGxQgHU.jpg)
-[Large Size Image](https://i.imgur.com/wGxQgHU.jpg)
 
 CI/CD パイプラインを構築しました。
 （理由は学習のため、あとで楽するため、カッコイイからです！:satisfied:）
@@ -144,7 +141,9 @@ pytest -vvs --durations=10
 |テストケース|
 
 ### app のテスト
-path: `tests/test_app.py` ▶ `app.py`
+
+テスト [`tests/test_app.py`](/tests/test_app.py)
+ターゲット [`app.py`](/app.py)
 
 |`get_index`|
 |-|
@@ -183,7 +182,9 @@ path: `tests/test_app.py` ▶ `app.py`
 |`json_body` が None のケース、例外を発生させることができる|
 
 ### `DynamoDBTodo` クラスのテスト
-path: `tests/test_db.py` ▶ `chalicelib/db.py`
+
+テスト [`tests/test_db.py`](/tests/test_db.py)
+ターゲット [`chalicelib/db.py`](/chalicelib/db.py)
 
 |`DynamoDBTodo.list_all_items`|
 |-|
@@ -218,7 +219,8 @@ path: `tests/test_db.py` ▶ `chalicelib/db.py`
 |`uid` が存在しないケース、例外を発生させることができる|
 
 ### バリデーションのテスト
-path: `tests/test_validates.py` ▶ `chalicelib/validates.py`
+テスト [`tests/test_validates.py`](/tests/test_validates.py)
+ターゲット [`chalicelib/validates.py`](/chalicelib/validates.py)
 
 |`Validates.subject`|
 |-|
