@@ -110,12 +110,18 @@ CI/CD パイプラインを構築しました。
 ---
 <br>
 
-# アプリの設計
+# Lambda の仕様
+
+各メソッドに Docstring を記載しているので、ご参照ください。
+
+* [app.py](/app.py)
+* [chalicelib/db.py](/chalicelib/db.py)
+
 
 ---
 <br>
 
-# テストの設計
+# テストの仕様
 
 今回はユニットテストのみ実施しています。
 `app.py` のテストでは `current_response.json_body` を差し替える必要があったため、pytest-chalice を使用しています。
@@ -134,7 +140,8 @@ pytest -vvs --durations=10
 
 ## テストケース
 
-現在実装されている、テストケースは以下の通りです。(2020-12-04 15:28)
+現在実装されている、テストケースを以下にリストしています。(2020-12-04 15:28)
+詳しくは各ソースコードをご確認ください。
 
 |テスト対象のメソッド|
 |:-|
@@ -142,8 +149,8 @@ pytest -vvs --durations=10
 
 ### app のテスト
 
-テスト [`tests/test_app.py`](/tests/test_app.py)
-ターゲット [`app.py`](/app.py)
+* テスト [`tests/test_app.py`](/tests/test_app.py)
+* ターゲット [`app.py`](/app.py)
 
 |`get_index`|
 |:-|
@@ -183,8 +190,8 @@ pytest -vvs --durations=10
 
 ### `DynamoDBTodo` クラスのテスト
 
-テスト [`tests/test_db.py`](/tests/test_db.py)
-ターゲット [`chalicelib/db.py`](/chalicelib/db.py)
+* テスト [`tests/test_db.py`](/tests/test_db.py)
+* ターゲット [`chalicelib/db.py`](/chalicelib/db.py)
 
 |`DynamoDBTodo.list_all_items`|
 |:-|
@@ -219,8 +226,8 @@ pytest -vvs --durations=10
 |`uid` が存在しないケース、例外を発生させることができる|
 
 ### バリデーションのテスト
-テスト [`tests/test_validates.py`](/tests/test_validates.py)
-ターゲット [`chalicelib/validates.py`](/chalicelib/validates.py)
+* テスト [`tests/test_validates.py`](/tests/test_validates.py)
+* ターゲット [`chalicelib/validates.py`](/chalicelib/validates.py)
 
 |`Validates.subject`|
 |:-|
