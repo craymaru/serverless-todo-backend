@@ -60,16 +60,21 @@ API の仕様についてはこちらを参照してください
 
 ## アーキテクチャ
 
-### サーバレス
+### サーバレスアプリケーション
+![](https://i.imgur.com/ltn85q8.jpg)
 * Amazon API Gateway
 * AWS Lambda
 * Amazon DynamoDB
 
 ### 認証
+![](https://i.imgur.com/XVBXFJT.jpg)
+
 * Amazon Cognito
 * AWS CloudFormation
 
-### CI/CD
+### CI/CD パイプライン
+![](https://i.imgur.com/wGxQgHU.jpg)
+
 * AWS CloudFormation
 * AWS CodePipeline
 * AWS CodeBuild
@@ -82,7 +87,6 @@ API の仕様についてはこちらを参照してください
 
 
 # アプリの設計
-
 
 ---
 <br>
