@@ -19,7 +19,7 @@ class TestApp:
 
 class TestGetIndex(TestApp):
     def test_Return_status_code_200_and_json(self, client):
-        """root: ステータスコード200とJSONを返すことができる"""
+        """get_index: ステータスコード200とJSONを返すことができる"""
         response = client.get('/')
         assert response.status_code == HTTPStatus.OK
         assert True if response.json else False == True

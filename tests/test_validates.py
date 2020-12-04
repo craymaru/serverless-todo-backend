@@ -34,7 +34,7 @@ class TestValidatesSubject(TestValidates):
         '@' * (Validates.SUBJECT_MIN_LEN),
         '@' * (Validates.SUBJECT_MAX_LEN)])
     def test_Pass_case_boundery_length(self, boundery_length_subject):
-        """subject: 境界値の限界 のケース、例外をパスできる"""
+        """subject: 文字の長さが境界値の限界 のケース、例外をパスできる"""
         assert Validates.subject(boundery_length_subject) == None
 
     @pytest.mark.parametrize('bad_length_subject', [
@@ -42,7 +42,7 @@ class TestValidatesSubject(TestValidates):
         '@' * (Validates.SUBJECT_MAX_LEN + 1),
         '@' * (Validates.SUBJECT_MAX_LEN * 10)])
     def test_Raise_BadRequestError_case_boundery_length(self, bad_length_subject):
-        """subject: 境界値を超過しているケース、例外を発生させることができる"""
+        """subject: 文字の長さが境界値を超過しているケース、例外を発生させることができる"""
         with pytest.raises(BadRequestError):
             Validates.subject(bad_length_subject)
 
@@ -64,14 +64,14 @@ class TestValidatesDescription(TestValidates):
             Validates.description(bad_type_description)
 
     def test_Pass_case_boundery_legth(self):
-        """description: 境界値の限界 のケース、例外をパスできる"""
+        """description: 文字の長さが境界値の限界 のケース、例外をパスできる"""
         assert Validates.description('@'*Validates.DESCRIPTION_MAX_LEN) == None
 
     @pytest.mark.parametrize('bad_length_description', [
         '@' * (Validates.DESCRIPTION_MAX_LEN + 1),
         '@' * (Validates.DESCRIPTION_MAX_LEN * 10)])
     def test_Raise_BadRequestError_case_boundery_length(self, bad_length_description):
-        """description: 境界値を超過しているケース、例外を発生させることができる"""
+        """description: 文字の長さが境界値を超過しているケース、例外を発生させることができる"""
         with pytest.raises(BadRequestError):
             Validates.description(bad_length_description)
 
@@ -128,7 +128,7 @@ class TestValidatesUsername(TestValidates):
         '@' * (Validates.USERNAME_MIN_LEN),
         '@' * (Validates.USERNAME_MAX_LEN)])
     def test_Pass_case_boundery_length(self, boundery_length_username):
-        """username: 境界値の限界 のケース、例外をパスできる"""
+        """username: 文字の長さが境界値の限界 のケース、例外をパスできる"""
         assert Validates.username(boundery_length_username) == None
 
     @pytest.mark.parametrize('bad_length_username', [
@@ -136,6 +136,6 @@ class TestValidatesUsername(TestValidates):
         '@' * (Validates.USERNAME_MAX_LEN + 1),
         '@' * (Validates.USERNAME_MAX_LEN * 10)])
     def test_Raise_BadRequestError_case_boundery_length(self, bad_length_username):
-        """username: 境界値を超過しているケース、例外を発生させることができる"""
+        """username: 文字の長さが境界値を超過しているケース、例外を発生させることができる"""
         with pytest.raises(BadRequestError):
             Validates.username(bad_length_username)
