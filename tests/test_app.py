@@ -19,6 +19,7 @@ class TestApp:
 
 class TestGetIndex(TestApp):
     def test_Return_status_code_200_and_json(self, client):
+        """root: ステータスコード200とJSONを返すことができる"""
         response = client.get('/')
         assert response.status_code == HTTPStatus.OK
         assert True if response.json else False == True
@@ -27,7 +28,8 @@ class TestGetIndex(TestApp):
 class TestGetAppDB(TestApp):
 
     def test_Return_DynamoDBTodo_class(self):
-        assert app.get_app_db().__class__ == DynamoDBTodo
+        """get_app_db: get_app_dbの返り値クラスと、元のクラスが一致する"""
+        assert app.get_app_db().__class__ is DynamoDBTodo
 
 
 class TestGetTodos(TestApp):
@@ -38,6 +40,7 @@ class TestGetTodos(TestApp):
                             lambda *_, **__: TESTDATA_DDB_ITEMS)
 
     def test_Return_todos_list(self, client, monkeypatch):
+        """get_todos: すべてのアイテムを取得することができる"""
         self._monkeys(client, monkeypatch)
         assert app.get_todos() == TESTDATA_DDB_ITEMS
 
@@ -53,7 +56,8 @@ class TestAddNewTodo(TestApp):
                             lambda *_, **__: 'default')
 
     @pytest.mark.parametrize('item', TESTDATA_DDB_ITEMS)
-    def test_Return_uid_when_Post_subject_and_description(self, client, monkeypatch, item):
+    def test_Return_uid_case_subject_and_description(self, client, monkeypatch, item):
+        """add_new_todo: subjectとdescriptionがあるケース、uidを受け取ることができる"""
         self._monkeys(client, monkeypatch)
         json_body = {
             'subject': item['subject'],
@@ -64,7 +68,8 @@ class TestAddNewTodo(TestApp):
         assert len(actual) == 36
 
     @pytest.mark.parametrize('item', TESTDATA_DDB_ITEMS)
-    def test_Return_uid_when_Post_subject_only(self, client, monkeypatch, item):
+    def test_Return_uid_case_subject_only(self, client, monkeypatch, item):
+        """add_new_todo: subjectのみのケース、uidを受け取ることができる"""
         self._monkeys(client, monkeypatch)
         json_body = {'subject': item['subject']}
         monkeypatch.setattr(Request, 'json_body', json_body)
@@ -72,7 +77,8 @@ class TestAddNewTodo(TestApp):
         assert type(actual) == str
         assert len(actual) == 36
 
-    def test_Raise_BadRequestError_when_None_subject(self, client, monkeypatch):
+    def test_Raise_BadRequestError_case_None_subject(self, client, monkeypatch):
+        """add_new_todo: subjectが無いケース、例外を発生させることができる"""
         self._monkeys(client, monkeypatch)
         json_body = {}
         monkeypatch.setattr(Request, 'json_body', json_body)
@@ -80,14 +86,16 @@ class TestAddNewTodo(TestApp):
             app.add_new_todo()
 
     @pytest.mark.parametrize('item', TESTDATA_DDB_ITEMS)
-    def test_Raise_BadRequestError_when_Post_without_subject(self, client, monkeypatch, item):
+    def test_Raise_BadRequestError_case_without_subject(self, client, monkeypatch, item):
+        """add_new_todo: descriptionのみのケース、例外を発生させることができる"""
         self._monkeys(client, monkeypatch)
         json_body = {'description': item['description']}
         monkeypatch.setattr(Request, 'json_body', json_body)
         with pytest.raises(BadRequestError):
             app.add_new_todo()
 
-    def test_Raise_BadRequestError_when_None_json_body(self, client, monkeypatch):
+    def test_Raise_BadRequestError_case_None_json_body(self, client, monkeypatch):
+        """add_new_todo: json_bodyがNoneのケース、例外を発生させることができる"""
         self._monkeys(client, monkeypatch)
         with pytest.raises(BadRequestError):
             app.add_new_todo()
@@ -104,6 +112,7 @@ class TestGetTodo(TestApp):
 
     @pytest.mark.parametrize('item', TESTDATA_DDB_ITEMS)
     def test_Return_todo_dict(self, monkeypatch, item):
+        """get_todo: 取得に指定したuid、usernameのTodoを受け取ることができる"""
         self._monkeys(monkeypatch)
         monkeypatch.setattr(app, 'get_authorized_username',
                             lambda *_, **__: item['username'])
@@ -121,6 +130,7 @@ class TestDeleteTodo(TestApp):
 
     @pytest.mark.parametrize('item', TESTDATA_DDB_ITEMS)
     def test_Return_uid(self, monkeypatch, item):
+        """delete_todo: 削除に指定したuid、usernameのTodoのuidを受け取ることができる"""
         self._monkeys(monkeypatch)
         monkeypatch.setattr(app, 'get_authorized_username',
                             lambda *_, **__: item['username'])
@@ -141,7 +151,8 @@ class TestUpdateTodo(TestApp):
                             lambda *_, **__: item['username'])
 
     @pytest.mark.parametrize('item', TESTDATA_DDB_ITEMS)
-    def test_Return_uid_when_Update_subject_description_state(self, client, monkeypatch, item):
+    def test_Return_uid_case_subject_description_state(self, client, monkeypatch, item):
+        """update_todo: すべての属性のケース、特定のTodoのuidを受け取ることができる"""
         self._monkeys(client, monkeypatch, item)
         json_body = {
             'subject': item['subject']+"_updated",
@@ -151,45 +162,31 @@ class TestUpdateTodo(TestApp):
         assert app.update_todo(item['uid']) == item['uid']
 
     @pytest.mark.parametrize('item', TESTDATA_DDB_ITEMS)
-    def test_Return_uid_when_Update_subject_only(self, client, monkeypatch, item):
+    def test_Return_uid_case_subject_only(self, client, monkeypatch, item):
+        """update_todo: subjectのみのケース、特定のTodoのuidを受け取ることができる"""
         self._monkeys(client, monkeypatch, item)
         json_body = {'subject': item['subject']+"_updated"}
         monkeypatch.setattr(Request, 'json_body', json_body)
         assert app.update_todo(item['uid']) == item['uid']
 
     @pytest.mark.parametrize('item', TESTDATA_DDB_ITEMS)
-    def test_Return_uid_when_Update_discription_only(self, client, monkeypatch, item):
+    def test_Return_uid_case_discription_only(self, client, monkeypatch, item):
+        """update_todo: discriptionのみのケース、特定のTodoのuidを受け取ることができる"""
         self._monkeys(client, monkeypatch, item)
         json_body = {'discription': item['description']+"_updated"}
         monkeypatch.setattr(Request, 'json_body', json_body)
         assert app.update_todo(item['uid']) == item['uid']
 
     @pytest.mark.parametrize('item', TESTDATA_DDB_ITEMS)
-    def test_Return_uid_when_Update_state_only(self, client, monkeypatch, item):
+    def test_Return_uid_case_state_only(self, client, monkeypatch, item):
+        """update_todo: stateのみのケース、特定のTodoのuidを受け取ることができる"""
         self._monkeys(client, monkeypatch, item)
         json_body = {'state': item['state']}
         monkeypatch.setattr(Request, 'json_body', json_body)
         assert app.update_todo(item['uid']) == item['uid']
 
-    def test_Raise_BadRequestError_when_None_json_body(self, client, monkeypatch):
+    def test_Raise_BadRequestError_case_None_json_body(self, client, monkeypatch):
+        """update_todo: json_bodyがNoneのケース、例外を発生させることができる"""
         self._monkeys(client, monkeypatch)
-        with pytest.raises(BadRequestError):
-            app.update_todo("_uid")
-
-
-class TestSharedRaises(TestApp):
-    expected_str = TESTDATA_DDB_ITEMS[0]['uid']
-
-    def _monkeys(self, client, monkeypatch):
-        super().set_env(client, monkeypatch)
-        monkeypatch.setattr(DynamoDBTodo, 'add_item',
-                            lambda *_, **__: self.expected_str)
-        monkeypatch.setattr(DynamoDBTodo, 'update_item',
-                            lambda *_, **__: self.expected_str)
-
-    def Raise_BadRequestError_when_None_json_body(self, client, monkeypatch):
-        self._monkeys(client, monkeypatch)
-        with pytest.raises(BadRequestError):
-            app.add_new_todo()
         with pytest.raises(BadRequestError):
             app.update_todo("_uid")

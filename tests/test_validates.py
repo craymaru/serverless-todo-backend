@@ -108,10 +108,10 @@ class TestValidatesState(TestValidates):
 
 class TestValidatesUsername(TestValidates):
 
-    # @pytest.mark.parametrize('username', [item['username'] for item in TESTDATA_DDB_ITEMS])
-    # def test_Pass_case_normal(self, username):
-    #     """username: 通常 のケース、例外をパスできる"""
-    #     assert Validates.username(username) == None
+    @pytest.mark.parametrize('username', [item['username'] for item in TESTDATA_DDB_ITEMS])
+    def test_Pass_case_normal(self, username):
+        """username: 通常 のケース、例外をパスできる"""
+        assert Validates.username(username) == None
 
     def test_Raise_BadRequestError_case_None(self):
         """username: None のケース、例外を発生させることができる"""

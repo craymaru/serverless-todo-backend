@@ -160,7 +160,7 @@ class TestUpdateItem(TestDB):
             username=item['username'])
         assert actual == item['uid']
 
-    def test_Raise_NotFoundError_when(self, mock):
+    def test_Raise_NotFoundError_case_uid_not_exist(self, mock):
         """update_item: uidが存在しないケース、例外を発生させることができる"""
         with pytest.raises(NotFoundError):
             app.get_app_db().update_item("_NOT_EXIST_UID", username=DEFAULT_USERNAME)
