@@ -22,7 +22,7 @@ def except_endpoint_connection_error(func):
 
 
 class DynamoDBTodo():
-    """DynamoDB テーブルに CRUD を行います
+    """特定の DynamoDB テーブルに CRUD を行います
 
     self.methods:
         list_all_items : すべての Todo オブジェクトをスキャンします
