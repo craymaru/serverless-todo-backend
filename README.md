@@ -28,10 +28,9 @@ API の仕様についてはこちらを参照してください
 
 | Name          | Version                | Note                    |
 |:------------- |:---------------------- |:----------------------- |
-| macOS Big Sur | 11.2 Beta（20C5048l）  |                         |
+| macOS Big Sur | 11.1 Beta（20C5061b）  |                         |
 | Xcode         | 12.2 beta 3 (12B5035g) |                         |
-| pyenv         | 3.8.6                  |                         |
-| pip           | 20.3.1                 |                         |
+| pyenv         | 3.8.6                  | Python のバージョン管理 |
 | pipenv        | 2020.11.15             | 仮想環境/パッケージ管理 |
 
 
@@ -42,7 +41,7 @@ API の仕様についてはこちらを参照してください
 
 | Name    | Version | Note                                   |
 |:------- |:------- |:-------------------------------------- |
-| Python  | 3.8.6   |                                        |
+| Python  | 3.8.6   | Lambda の言語として採用                                       |
 | chalice | 1.21.4  | API Gateway と Lambda の管理、デプロイ |
 | boto3   | 1.16.25 | AWS SDK for Python                     |
  
