@@ -1,7 +1,5 @@
 # serverless-todo API
 
-(このドキュメントは現在作成中です🐈)
-
 serverless-todo API は Todo を登録、取得(検索)、更新、削除することができるシンプルな REST API です。
 
 この API は AWS Lambda と Amazon DynamoDB を基盤としたサーバーレスアーキテクチャで設計しました。
@@ -9,14 +7,14 @@ serverless-todo API は Todo を登録、取得(検索)、更新、削除する�
 >このドキュメントでは AWS の各名称について Amazon, AWS などのプリフィックスを省略し、`Amazon Cognito` → `Cognito`、`AWS CloudFormation` → `CloudFormation` のように表現することがありますので予めご留意ください。
 
 ### References
-API の仕様についてはこちらを参照してください
+**API の仕様についてはこちらを参照してください**
 
 [serverless-todo API: Reference](https://serverlesstodo.docs.apiary.io/)
 
 [serverless-todo API: Cognito UserPool Auth Reference](https://cognitouserpoolauth.docs.apiary.io/)
 
 
-デプロイ手順はこちらを参照してください
+**デプロイ手順はこちらを参照してください**
 
 [serverless-todo API: Deploy](https://hackmd.io/@craymaru/BJ3Wixq9P)
 
@@ -41,11 +39,11 @@ API の仕様についてはこちらを参照してください
 
 | Name    | Version | Note                                   |
 |:------- |:------- |:-------------------------------------- |
-| Python  | 3.8.6   | Lambda の言語として採用                                       |
-| chalice | 1.21.4  | API Gateway と Lambda の管理、デプロイ |
+| Python  | 3.8.6   | Lambda の言語として採用                |
+| Chalice | 1.21.4  | API Gateway と Lambda の管理、デプロイ |
 | boto3   | 1.16.25 | AWS SDK for Python                     |
  
- > 依存ライブラリは省略。詳細は /Pipfile.lock から確認可能。
+ > 依存ライブラリは省略。詳細は [Pipfile.lock](/Pipfile.lock) から確認可能。
 
 
 ### ユニットテスト
