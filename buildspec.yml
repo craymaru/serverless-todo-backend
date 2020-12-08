@@ -16,10 +16,15 @@ phases:
       - pipenv install --dev
       - export VENV_HOME_DIR=$(pipenv --venv)
       - . $VENV_HOME_DIR/bin/activate
-      - pytest tests/ -vs --durations=10 || exit 1
+      - pytest tests/ -vs --durations=10 --junit-xml=reports/unittest_results.xml || exit 1
   build:
     commands:
       - chalice package /tmp/packaged
   post_build:
     commands:
       - aws cloudformation package --template-file /tmp/packaged/sam.json --s3-bucket ${APP_S3_BUCKET} --output-template-file transformed.yaml
+reports:
+  unittest-rep-group:
+    files:
+      - '**/*'
+    base-directory: reports/

@@ -82,6 +82,16 @@
               "Action": ["s3:GetObject", "s3:GetObjectVersion", "s3:PutObject"],
               "Resource": "arn:*:s3:::*",
               "Effect": "Allow"
+            },
+            {
+              "Action": [
+                "codebuild:CreateReportGroup",
+                "codebuild:CreateReport",
+                "codebuild:UpdateReport",
+                "codebuild:BatchPutTestCases"
+              ],
+              "Resource": "*",
+              "Effect": "Allow"
             }
           ]
         },
