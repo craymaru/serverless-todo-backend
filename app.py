@@ -75,7 +75,7 @@ def get_todos():
     """クエリに基づき、Todo のリストを取得する DynamoDBTodo.list_items をコールします
 
     リクエストに含まれる Amazon Cognito の トークンを参照し、
-    username ごとに DynamoDB から取得し、 Todo オブジェクトのリストを返します。
+    username ごとに DynamoDB テーブルから Todo オブジェクトを取得し、リストを返します。
 
     このとき検索クエリが指定されている場合は、
     Todo の subject, description キーの値に、検索クエリが含まれているものを取得します。

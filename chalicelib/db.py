@@ -1,4 +1,3 @@
-from typing import DefaultDict
 from uuid import uuid4
 
 from botocore.exceptions import EndpointConnectionError
