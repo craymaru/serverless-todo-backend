@@ -223,3 +223,9 @@ def update_todo(uid):
 def get_index():
     """ウェルカムメッセージを返します"""
     return {'message': 'Welcome to serverless-todo api!'}
+
+
+@app.route('/all_todos', methods=['GET'], cors=True)
+def get_index():
+    """ページネーションの試用"""
+    return get_app_db().list_all_items()

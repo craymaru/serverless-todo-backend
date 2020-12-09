@@ -45,11 +45,26 @@ class DynamoDBTodo():
     def __init__(self, table_resource):
         self._table = table_resource
 
+    def get_pagenated_items(self, **kwargs):
+        while True:
+            response = self._table.scan(**kwargs)
+            for item in response['Items']:
+                yield item
+            if 'LastEvaluatedKey' not in response:
+                break
+            kwargs.update(ExclusiveStartKey=response['LastEvaluatedKey'])
+
     @except_endpoint_connection_error
     def list_all_items(self):
-        """すべての Todo オブジェクトをスキャンします"""
-        response = self._table.scan()
-        return response['Items']
+        """すべての Todo オブジェクトをスキャンします(ページネーション試用)"""
+        records = self.get_pagenated_items()
+        return list(records)
+
+    # @except_endpoint_connection_error
+    # def list_all_items(self):
+    #     """すべての Todo オブジェクトをスキャンします"""
+    #     response = self._table.scan()
+    #     return response['Items']
 
     @except_endpoint_connection_error
     def list_items(self, query='', username=DEFAULT_USERNAME):
